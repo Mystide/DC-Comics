@@ -161,7 +161,8 @@
         badge.textContent = 'Read';
         card.appendChild(badge);
 
-        $1
+        const img = document.createElement('img');
+        img.src = c.covers[0];
         img.loading = 'lazy';
         img.alt = c.title;
 
