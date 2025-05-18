@@ -203,7 +203,24 @@
             }
           }, 600);
         });
+        img.addEventListener('touchstart', (event) => {
+          event.preventDefault();
+          if (document.getElementById('infoDialog').open) return;
+          longPress = false;
+          card.setAttribute('data-pressing', 'true');
+          pressTimer = setTimeout(() => {
+            if (card.getAttribute('data-pressing') === 'true') {
+              longPress = true;
+              toggleRead(c.title);
+              navigator.vibrate?.(100);
+            }
+          }, 600);
+        });
         img.addEventListener('mouseup', () => {
+          card.setAttribute('data-pressing', 'false');
+          clearTimeout(pressTimer);
+        });
+        img.addEventListener('touchend', () => {
           card.setAttribute('data-pressing', 'false');
           clearTimeout(pressTimer);
         });
