@@ -262,7 +262,14 @@
       }
 
       document.getElementById('infoDialog').close();
-      renderComics(document.getElementById('searchInput').value);
+      const grid = document.getElementById('comicGrid');
+      const cards = grid.querySelectorAll('.comic-card');
+      cards.forEach(card => {
+        const titleEl = card.querySelector('.comic-title');
+        if (titleEl?.textContent === title) {
+          card.classList.toggle('read');
+        }
+      });
       updateProgress();
 
       setTimeout(() => {
