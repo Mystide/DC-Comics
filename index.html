@@ -186,6 +186,7 @@
         img.onload = () => img.classList.add('loaded');
         observer.observe(img);
         img.alt = c.title;
+        img.addEventListener('contextmenu', (e) => e.preventDefault());
 
         let pressTimer;
         let longPress = false;
