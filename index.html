@@ -45,12 +45,10 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.5);
       position: relative;
     }
-    .comic-card img {
-      width: 100%;
-      height: auto;
-      border-radius: 4px;
-      cursor: pointer;
-    }
+    $1
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
     .comic-title {
       font-weight: bold;
       font-size: 0.9rem;
@@ -111,7 +109,10 @@
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-  </style>
+  .comic-card img.loaded {
+  opacity: 1;
+}
+</style>
 </head>
 <body>
   <div id="progressBarWrap" style="width: 100%; height: 4px; background: #333; border-radius: 4px; position: relative;">
@@ -163,6 +164,8 @@
 
         const img = document.createElement('img');
         img.dataset.src = c.covers[0];
+        img.classList.add('fade');
+        img.onload = () => img.classList.add('loaded');
         observer.observe(img);
         img.alt = c.title;
 
