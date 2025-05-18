@@ -212,6 +212,7 @@
         img.addEventListener('click', (e) => {
           card.setAttribute('data-pressing', 'false');
           clearTimeout(pressTimer);
+          if (longPress) return;
           e.preventDefault();
           openDialog(c);
         });
