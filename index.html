@@ -204,11 +204,11 @@
           }, 600);
         });
         img.addEventListener('touchstart', (event) => {
-          event.preventDefault();
           if (document.getElementById('infoDialog').open) return;
           longPress = false;
           card.setAttribute('data-pressing', 'true');
           pressTimer = setTimeout(() => {
+            
             if (card.getAttribute('data-pressing') === 'true') {
               longPress = true;
               toggleRead(c.title);
