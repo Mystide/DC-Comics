@@ -148,9 +148,11 @@
       <option value="4">4 Columns</option>
       <option value="5">5 Columns</option>
     </select>
-    <select id="sortSelect">
-      <option value="asc">Ascending ↑</option>
-      <option value="desc">Descending ↓</option>
+    $1
+    <select id="readFilterSelect">
+      <option value="all">All</option>
+      <option value="unread">Unread</option>
+      <option value="read">Read</option>
     </select>
   </div>
   </div>
@@ -161,10 +163,13 @@
     let comics = [];
 
     function renderComics(filter = '') {
+      const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
       const grid = document.getElementById('comicGrid');
       grid.innerHTML = '';
       const sort = document.getElementById('sortSelect').value;
       const filtered = comics.filter(c => {
+        if (readFilter === 'read' && !localStorage.getItem(c.title)) return false;
+        if (readFilter === 'unread' && localStorage.getItem(c.title)) return false;
         const text = `${c.title} ${c.event} ${(c.characters || []).join(' ')} ${(c.writer || []).join(' ')} ${(c.artist || []).join(' ')}`.toLowerCase();
         return text.includes(filter.toLowerCase());
       }).sort((a, b) => sort === 'asc'
@@ -318,6 +323,10 @@
       renderComics(e.target.value);
     });
     document.getElementById('sortSelect').addEventListener('change', () => {
+      renderComics(document.getElementById('searchInput').value);
+    });
+
+    document.getElementById('readFilterSelect').addEventListener('change', () => {
       renderComics(document.getElementById('searchInput').value);
     });
 
