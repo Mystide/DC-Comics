@@ -33,11 +33,12 @@
       transition: background 0.2s ease, color 0.2s ease;
     }
     .comic-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
-    }
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  align-items: start;
+}
     .comic-card {
   background: #1c1c1c;
   border-radius: 8px;
@@ -47,12 +48,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  height: 100%;
+  justify-content: flex-start;
+  height: auto;
 }
     .comic-card img {
   width: 100%;
-  height: auto;
+  aspect-ratio: 2 / 3;
   display: block;
   border-radius: 4px;
   object-fit: cover;
