@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comic Guide Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d0d;
+      font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif;
+      color: #f0f0f0;
+    }
+    .search-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.3rem;
+      padding: 0.5rem;
+      background: #181818;
+      align-items: center;
+    }
+    .search-bar input, .search-bar select {
+      padding: 0.35rem 0.6rem;
+      border: none;
+      border-radius: 6px;
+      background: #292929;
+      color: #f0f0f0;
+      font-size: 0.8rem;
+      appearance: none;
+      max-width: 100px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .comic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .comic-card {
+      background: #1c1c1c;
+      border-radius: 8px;
+      padding: 0.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .comic-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .comic-title {
+      font-weight: bold;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    .read-badge {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: #4caf50;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      display: none;
+    }
+    .comic-card.read .read-badge {
+      display: block;
+    }
+    .comic-card.read {
+      opacity: 0.6;
+    }
+    dialog {
+      position: relative;
+      background: #1e1e1e;
+      color: #fff;
+      padding: 1.5rem;
+      border: none;
+      border-radius: 10px;
+      max-width: 90%;
+      width: 400px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      animation: fadeIn 0.3s ease-out;
+    }
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.6);
+    }
+    dialog h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      border-bottom: 1px solid #444;
+      padding-bottom: 0.5rem;
+    }
+    dialog p {
+      font-size: 0.9rem;
+      margin: 0.4rem 0;
+      line-height: 1.4;
+    }
+    dialog a {
+      color: #4dabf7;
+      text-decoration: none;
+    }
+    dialog a:hover {
+      text-decoration: underline;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="progressBarWrap" style="width: 100%; height: 4px; background: #333; border-radius: 4px; position: relative;">
+    <div id="progressBar" style="height: 100%; width: 0%; background: #4caf50; border-radius: 4px;"></div>
+    <div id="progressText" style="position: absolute; top: 6px; right: 10px; font-size: 0.7rem; color: #bbb;"></div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search..." title="Search title, event, characters, writer, artist">
+    <select id="columnSelect">
+      <option value="auto">Auto</option>
+      <option value="2">2 Columns</option>
+      <option value="3">3 Columns</option>
+      <option value="4">4 Columns</option>
+      <option value="5">5 Columns</option>
+    </select>
+    <select id="sortSelect">
+      <option value="asc">Ascending ↑</option>
+      <option value="desc">Descending ↓</option>
+    </select>
+  </div>
+
+  <div class="comic-grid" id="comicGrid" ></div>
+  <dialog id="infoDialog" style="padding-top: 2.2rem;"></dialog>
+  <script>
+    let comics = [];
+
+    function renderComics(filter = '') {
+      const grid = document.getElementById('comicGrid');
+      grid.innerHTML = '';
+      const sort = document.getElementById('sortSelect').value;
+      const filtered = comics.filter(c => {
+        const text = `${c.title} ${c.event} ${(c.characters || []).join(' ')} ${(c.writer || []).join(' ')} ${(c.artist || []).join(' ')}`.toLowerCase();
+        return text.includes(filter.toLowerCase());
+      }).sort((a, b) => sort === 'asc'
+        ? (a.issue_number || 0) - (b.issue_number || 0)
+        : (b.issue_number || 0) - (a.issue_number || 0)
+      );
+
+      filtered.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'comic-card';
+        if (localStorage.getItem(c.title)) card.classList.add('read');
+
+        const badge = document.createElement('div');
+        badge.className = 'read-badge';
+        badge.textContent = 'Read';
+        card.appendChild(badge);
+
+        const img = document.createElement('img');
+        img.src = c.covers[0];
+        img.alt = c.title;
+
+        let pressTimer;
+        let longPress = false;
+        img.addEventListener('mousedown', (event) => {
+          if (event.button !== 0) return;
+          if (document.getElementById('infoDialog').open) return;
+          longPress = false;
+          card.setAttribute('data-pressing', 'true');
+          pressTimer = setTimeout(() => {
+            if (card.getAttribute('data-pressing') === 'true') {
+              longPress = true;
+              toggleRead(c.title);
+              navigator.vibrate?.(100);
+            }
+          }, 600);
+        });
+        img.addEventListener('mouseup', () => {
+          card.setAttribute('data-pressing', 'false');
+          clearTimeout(pressTimer);
+        });
+        img.addEventListener('mouseleave', () => {
+          card.setAttribute('data-pressing', 'false');
+          clearTimeout(pressTimer);
+        });
+        img.addEventListener('click', (e) => {
+          card.setAttribute('data-pressing', 'false');
+          clearTimeout(pressTimer);
+          e.preventDefault();
+          openDialog(c);
+        });
+
+        card.appendChild(img);
+
+        const title = document.createElement('div');
+        title.className = 'comic-title';
+        title.textContent = c.title;
+        card.appendChild(title);
+
+        grid.appendChild(card);
+      });
+    }
+
+    function openDialog(comic) {
+      const dialog = document.getElementById('infoDialog');
+      dialog.innerHTML = `
+        <button onclick="document.getElementById('infoDialog').close()" style="position: absolute; top: 8px; right: 12px; background: transparent; border: none; font-size: 1.5rem; color: #ccc; cursor: pointer; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">&times;</button>
+        <h2>${comic.title}</h2>
+        <p><strong>Release:</strong> ${comic.release_date || ''}</p>
+        <p><strong>Event:</strong> ${comic.event || '-'}</p>
+        <p><strong>Format:</strong> ${comic.format || ''} | ${comic.page_count || ''} pages</p>
+        <p><strong>Writer:</strong> ${(comic.writer || []).join(', ')}</p>
+        <p><strong>Artist:</strong> ${(comic.artist || []).join(', ')}</p>
+        <p><strong>Characters:</strong> ${(comic.characters || []).join(', ')}</p>
+        <p>${comic.description || ''}</p>
+        <p><a href="${comic.url}" target="_blank">🔗 View on League of Comic Geeks</a></p>
+      `;
+      dialog.showModal();
+      dialog.addEventListener('click', (event) => {
+        const rect = dialog.getBoundingClientRect();
+        const isInDialog = (
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom
+        );
+        if (!isInDialog) dialog.close();
+      }, { once: true });
+    }
+
+    function toggleRead(title) {
+      if (localStorage.getItem(title)) {
+        localStorage.removeItem(title);
+      } else {
+        localStorage.setItem(title, 'read');
+      }
+
+      document.getElementById('infoDialog').close();
+      renderComics(document.getElementById('searchInput').value);
+      updateProgress();
+
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.comic-card');
+        cards.forEach(card => {
+          if (card.querySelector('.comic-title')?.textContent === title) {
+            card.style.boxShadow = '0 0 10px #4caf50';
+            setTimeout(() => card.style.boxShadow = '', 250);
+          }
+        });
+      }, 0);
+    }
+
+    function updateProgress() {
+      const total = comics.length;
+      const read = comics.filter(c => localStorage.getItem(c.title)).length;
+      const percent = total ? Math.round((read / total) * 100) : 0;
+      document.getElementById('progressBar').style.width = `${percent}%`;
+      const text = `${read} / ${total} read (${percent}%)`;
+      document.getElementById('progressText').textContent = text;
+    }
+
+    document.getElementById('searchInput').addEventListener('input', e => {
+      renderComics(e.target.value);
+    });
+    document.getElementById('sortSelect').addEventListener('change', () => {
+      renderComics(document.getElementById('searchInput').value);
+    });
+
+    document.getElementById('columnSelect').addEventListener('change', (e) => {
+      const grid = document.getElementById('comicGrid');
+      const value = e.target.value;
+      if (value === 'auto') {
+        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(160px, 1fr))';
+      } else {
+        grid.style.gridTemplateColumns = `repeat(${value}, 1fr)`;
+      }
+    });
+
+    fetch("manifest.json")
+      .then(res => res.json())
+      .then(files => Promise.all(
+        files.map(file => fetch(file).then(r => r.json()))
+      ))
+      .then(results => {
+        comics = results.flat();
+        renderComics();
+        updateProgress();
+      });
+  </script>
+</body>
+</html>
