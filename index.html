@@ -48,9 +48,16 @@
   opacity: 0;
   transition: opacity 0.3s ease-in;
 }
-.comic-card img.loaded {
-  opacity: 1;
+.comic-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
 }
+
+.comic-card img.loaded {
     .comic-title {
   font-weight: bold;
   font-size: 0.9rem;
@@ -118,17 +125,8 @@
   .comic-card img.loaded {
   opacity: 1;
 }
-.comic-card {
-  background: #1c1c1c;
-  border-radius: 8px;
-  padding: 0.5rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
+$1
+  aspect-ratio: 2 / 3;
 </style>
 </head>
 <body>
@@ -345,7 +343,7 @@
       if (value === 'auto') {
         grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(160px, 1fr))';
       } else {
-        grid.style.gridTemplateColumns = `repeat(${value}, 1fr)`;
+        grid.style.gridTemplateColumns = `repeat(${value}, minmax(0, 1fr))`;
       }
     });
 
