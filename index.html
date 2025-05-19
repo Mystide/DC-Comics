@@ -52,14 +52,15 @@
   position: relative;
   aspect-ratio: 2 / 3;
   overflow: hidden;
+  transition: box-shadow 0.3s ease;
 }
 
 .comic-card img {
-$1
-  position: relative;
-
-.comic-card img.loaded {
-  opacity: 1;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
 }
 
 .comic-title {
@@ -71,6 +72,8 @@ $1
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  padding: 0 0.5rem;
+  word-break: break-word;
 }
     .read-badge {
       position: absolute;
@@ -128,6 +131,7 @@ $1
     }
   .comic-card img.loaded {
   opacity: 1;
+  filter: none;
 }
 $1
   aspect-ratio: 2 / 3;
