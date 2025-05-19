@@ -322,7 +322,7 @@
     function updateProgress() {
       const total = comics.length;
       const read = comics.filter(c => localStorage.getItem(c.title)).length;
-      const percent = total ? Math.round((read / total) * 100) : 0;
+      const percent = total ? ((read / total) * 100).toFixed(2) : 0;
       document.getElementById('progressBar').style.width = `${percent}%`;
       const text = `${read} / ${total} read (${percent}%)`;
       document.getElementById('progressText').textContent = text;
