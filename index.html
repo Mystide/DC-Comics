@@ -129,6 +129,27 @@
   align-items: center;
   justify-content: flex-start;
 }
+.comic-card:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+#scrollTopBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 1000;
+}
 </style>
 </head>
 <body>
@@ -345,7 +366,7 @@
       if (value === 'auto') {
         grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(160px, 1fr))';
       } else {
-        grid.style.gridTemplateColumns = `repeat(${value}, 1fr)`;
+        grid.style.gridTemplateColumns = `repeat(${value}, minmax(0, 1fr))`;
       }
     });
 
@@ -375,6 +396,24 @@ document.getElementById('settingsToggle').addEventListener('click', () => {
   const menu = document.getElementById('settingsMenu');
   menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
 });
+
+document.addEventListener('click', (e) => {
+  const toggle = document.getElementById('settingsToggle');
+  const menu = document.getElementById('settingsMenu');
+  if (!menu.contains(e.target) && e.target !== toggle) {
+    menu.style.display = 'none';
+  }
+});
+
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scrollTopBtn');
+  btn.style.display = window.scrollY > 300 ? 'block' : 'none';
+});
+
+document.getElementById('scrollTopBtn').addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 </script>
+<button id="scrollTopBtn">↑</button>
 </body>
 </html>
