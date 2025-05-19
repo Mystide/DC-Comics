@@ -130,25 +130,33 @@
   justify-content: flex-start;
 }
 .comic-card:hover {
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-  transition: all 0.2s ease;
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+  transform: translateY(-3px);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 #scrollTopBtn {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: #333;
+  background: #4caf50;
   color: #fff;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   display: none;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   cursor: pointer;
   z-index: 1000;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#scrollTopBtn:hover {
+  background: #66bb6a;
+  transform: translateY(-2px);
 }
 </style>
 </head>
