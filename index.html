@@ -191,7 +191,6 @@
 </select>
 </div>
 </div>
-
 <button id="scrollTopBtn">↑</button>
 <div class="comic-grid" id="comicGrid"></div>
 <dialog id="infoDialog" style="padding-top: 2.2rem;"></dialog>
@@ -427,5 +426,26 @@ document.getElementById('settingsToggle').addEventListener('click', () => {
 });
 </script>
 <button id="scrollTopBtn">↑</button>
-</body>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('settingsToggle');
+  const menu = document.getElementById('settingsMenu');
+  if (menu) menu.style.display = 'none';
+
+  toggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (menu.style.display === 'none') {
+      menu.style.display = 'block';
+    } else {
+      menu.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target) && e.target !== toggle) {
+      menu.style.display = 'none';
+    }
+  });
+});
+</script></body>
 </html>
