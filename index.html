@@ -199,233 +199,105 @@
 <button id="scrollTopBtn">↑</button>
 <div class="comic-grid" id="comicGrid"></div>
 <dialog id="infoDialog" style="padding-top: 2.2rem;"></dialog>
-<script>document.getElementById('searchInput').value = '';
+<script>
+function parseDate(dateStr) {
+  if (!dateStr) return new Date(0);
+  const months = {
+    Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+    Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+  };
+  const parts = dateStr.split(/\s|,|\//);
+  const month = months[parts[0]];
+  const day = parseInt(parts[1]) || 1;
+  const year = parseInt(parts[2]);
+  return new Date(year, month, day);
+}
 
-    let comics = [];
+function renderComics(filter = '') {
+  const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
+  const grid = document.getElementById('comicGrid');
+  grid.innerHTML = '';
+  const sortValue = document.getElementById('sortSelect')?.value || 'release-desc';
 
-    function renderComics(filter = '') {
-      const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
-      const grid = document.getElementById('comicGrid');
-      grid.innerHTML = '';
-      
-        return text.includes(filter.toLowerCase());
-      }).sort((a, b) => sort === 'asc'
-        ? (a.issue_number || 0) - (b.issue_number || 0)
-        : (b.issue_number || 0) - (a.issue_number || 0)
-      );
-
-      filtered.forEach(c => {
-        const card = document.createElement('div');
-        card.className = 'comic-card';
-        if (localStorage.getItem(c.title)) card.classList.add('read');
-
-        const badge = document.createElement('div');
-        badge.className = 'read-badge';
-        badge.textContent = 'Read';
-        card.appendChild(badge);
-
-        const img = document.createElement('img');
-        img.dataset.src = c.covers[0];
-        img.classList.add('fade');
-        img.onload = () => img.classList.add('loaded');
-        observer.observe(img);
-        img.alt = c.title;
-        img.addEventListener('contextmenu', (e) => e.preventDefault());
-
-        let pressTimer;
-        let longPress = false;
-        img.addEventListener('mousedown', (event) => {
-          if (event.button !== 0) return;
-          if (document.getElementById('infoDialog').open) return;
-          longPress = false;
-          card.setAttribute('data-pressing', 'true');
-          pressTimer = setTimeout(() => {
-            if (card.getAttribute('data-pressing') === 'true') {
-              longPress = true;
-              toggleRead(c.title);
-              navigator.vibrate?.(100);
-            }
-          }, 600);
-        });
-        img.addEventListener('touchstart', (event) => {
-          if (document.getElementById('infoDialog').open) return;
-          longPress = false;
-          card.setAttribute('data-pressing', 'true');
-          pressTimer = setTimeout(() => {
-            
-            if (card.getAttribute('data-pressing') === 'true') {
-              longPress = true;
-              toggleRead(c.title);
-              navigator.vibrate?.(100);
-            }
-          }, 600);
-        });
-        img.addEventListener('mouseup', () => {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-        });
-        img.addEventListener('touchend', () => {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-        });
-        img.addEventListener('mouseleave', () => {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-        });
-        img.addEventListener('click', (e) => {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-          if (longPress) return;
-          e.preventDefault();
-          openDialog(c);
-        });
-
-        card.appendChild(img);
-
-        const title = document.createElement('div');
-        title.className = 'comic-title';
-        title.textContent = c.title;
-        card.appendChild(title);
-
-        grid.appendChild(card);
-      });
-    }
-
-    function openDialog(comic) {
-      const dialog = document.getElementById('infoDialog');
-      dialog.innerHTML = `
-        <button onclick="document.getElementById('infoDialog').close()" style="position: absolute; top: 8px; right: 12px; background: transparent; border: none; font-size: 1.5rem; color: #ccc; cursor: pointer; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">&times;</button>
-        <h2>${comic.title}</h2>
-        <p><strong>Release:</strong> ${comic.release_date || ''}</p>
-        <p><strong>Event:</strong> ${comic.event || '-'}</p>
-        <p><strong>Format:</strong> ${comic.format || ''} | ${comic.page_count || ''} pages</p>
-        <p><strong>Writer:</strong> ${(comic.writer || []).join(', ')}</p>
-        <p><strong>Artist:</strong> ${(comic.artist || []).join(', ')}</p>
-        <p><strong>Characters:</strong> ${(comic.characters || []).join(', ')}</p>
-        <p>${comic.description || ''}</p>
-        <p><a href="${comic.url}" target="_blank">🔗 View on League of Comic Geeks</a></p>
-      `;
-      dialog.showModal();
-      dialog.addEventListener('click', (event) => {
-        const rect = dialog.getBoundingClientRect();
-        const isInDialog = (
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-        );
-        if (!isInDialog) dialog.close();
-      }, { once: true });
-    }
-
-    function toggleRead(title) {
-      if (localStorage.getItem(title)) {
-        localStorage.removeItem(title);
-      } else {
-        localStorage.setItem(title, 'read');
-      }
-
-      document.getElementById('infoDialog').close();
-      const grid = document.getElementById('comicGrid');
-      const cards = grid.querySelectorAll('.comic-card');
-      cards.forEach(card => {
-        const titleEl = card.querySelector('.comic-title');
-        if (titleEl?.textContent === title) {
-          card.classList.toggle('read');
-        }
-      });
-      updateProgress();
-
-      setTimeout(() => {
-        const cards = document.querySelectorAll('.comic-card');
-        cards.forEach(card => {
-          if (card.querySelector('.comic-title')?.textContent === title) {
-            card.style.boxShadow = '0 0 10px #4caf50';
-            setTimeout(() => card.style.boxShadow = '', 250);
-          }
-        });
-      }, 0);
-    }
-
-    function updateProgress() {
-      const total = comics.length;
-      const read = comics.filter(c => localStorage.getItem(c.title)).length;
-      const percent = total ? ((read / total) * 100).toFixed(2) : 0;
-      document.getElementById('progressBar').style.width = `${percent}%`;
-      const text = `${read} / ${total} read (${percent}%)`;
-      document.getElementById('progressText').textContent = text;
-    }
-
-    document.getElementById('searchInput').addEventListener('input', e => {
-      renderComics(e.target.value);
-    });
-    document.getElementById('sortSelect').addEventListener('change', () => {
-      renderComics(document.getElementById('searchInput').value);
-    });
-
-    document.getElementById('readFilterSelect').addEventListener('change', () => {
-      renderComics(document.getElementById('searchInput').value);
-    });
-
-    document.getElementById('columnSelect').addEventListener('change', (e) => {
-      const grid = document.getElementById('comicGrid');
-      const value = e.target.value;
-      if (value === 'auto') {
-  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))';
-} else {
-        grid.style.gridTemplateColumns = `repeat(${value}, minmax(0, 1fr))`;
-      }
-    });
-
-    fetch("./manifest.json")
-      .then(res => res.json())
-      .then(files => Promise.all(
-        files.map(file => fetch(file).then(r => r.json()))
-      ))
-      .then(results => {
-        comics = results.flat();
-        renderComics();
-        updateProgress();
-      });
-  // Preload observer for intelligent loading
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const img = entry.target;
-      img.src = img.dataset.src;
-      observer.unobserve(img);
-    }
+  const filtered = comics.filter(c => {
+    if (readFilter === 'read' && !localStorage.getItem(c.title)) return false;
+    if (readFilter === 'unread' && localStorage.getItem(c.title)) return false;
+    const text = `${c.title} ${c.series} ${c.event} ${(c.characters || []).join(' ')}`.toLowerCase();
+    return text.includes(filter.toLowerCase());
   });
-}, {
-  rootMargin: '600px'
-});
-document.getElementById('settingsToggle').addEventListener('click', () => {
-  const menu = document.getElementById('settingsMenu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-});
 
-document.addEventListener('click', (e) => {
-  const toggle = document.getElementById('settingsToggle');
-  const menu = document.getElementById('settingsMenu');
-  if (!menu.contains(e.target) && e.target !== toggle) {
-    menu.style.display = 'none';
+  switch (sortValue) {
+    case 'title-asc':
+      filtered.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+    case 'title-desc':
+      filtered.sort((a, b) => b.title.localeCompare(a.title));
+      break;
+    case 'release-asc':
+      filtered.sort((a, b) => parseDate(a.release_date) - parseDate(b.release_date));
+      break;
+    case 'release-desc':
+      filtered.sort((a, b) => parseDate(b.release_date) - parseDate(a.release_date));
+      break;
   }
-});
 
-window.addEventListener('scroll', () => {
-  const btn = document.getElementById('scrollTopBtn');
-  btn.style.display = window.scrollY > 300 ? 'block' : 'none';
-});
+  filtered.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'comic-card';
+    if (localStorage.getItem(c.title)) card.classList.add('read');
 
-document.getElementById('scrollTopBtn').addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+    const badge = document.createElement('div');
+    badge.className = 'read-badge';
+    badge.textContent = 'Read';
+    card.appendChild(badge);
 
+    const img = document.createElement('img');
+    img.dataset.src = c.covers?.[0] || '';
+    img.classList.add('fade');
+    img.onload = () => img.classList.add('loaded');
+    observer.observe(img);
+    img.alt = c.title;
+    img.addEventListener('contextmenu', e => e.preventDefault());
 
-document.getElementById('settingsToggle').addEventListener('click', () => {
-  const menu = document.getElementById('settingsMenu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-});
+    let pressTimer;
+    let longPress = false;
+    img.addEventListener('mousedown', (event) => {
+      if (event.button !== 0) return;
+      if (document.getElementById('infoDialog').open) return;
+      longPress = false;
+      card.setAttribute('data-pressing', 'true');
+      pressTimer = setTimeout(() => {
+        if (card.getAttribute('data-pressing') === 'true') {
+          longPress = true;
+          toggleRead(c.title);
+          navigator.vibrate?.(100);
+        }
+      }, 600);
+    });
+    img.addEventListener('mouseup', () => {
+      card.setAttribute('data-pressing', 'false');
+      clearTimeout(pressTimer);
+    });
+    img.addEventListener('mouseleave', () => {
+      card.setAttribute('data-pressing', 'false');
+      clearTimeout(pressTimer);
+    });
+    img.addEventListener('click', (e) => {
+      card.setAttribute('data-pressing', 'false');
+      clearTimeout(pressTimer);
+      if (longPress) return;
+      e.preventDefault();
+      openDialog(c);
+    });
+
+    card.appendChild(img);
+    const title = document.createElement('div');
+    title.className = 'comic-title';
+    title.textContent = c.title;
+    card.appendChild(title);
+    grid.appendChild(card);
+  });
+}
 </script>
 <button id="scrollTopBtn">↑</button>
 <script>
