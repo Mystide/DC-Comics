@@ -35,7 +35,7 @@
     }
     .comic-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
   padding: 1rem;
   align-items: start;
@@ -159,14 +159,6 @@
   background: #666;
   transform: translateY(-2px);
 }
-
-
-.comic-grid {
-  justify-content: start;
-}
-.comic-card {
-  
-}
 </style>
 </head>
 <body>
@@ -196,117 +188,23 @@
 </select>
 </div>
 </div>
+
 <button id="scrollTopBtn">↑</button>
 <div class="comic-grid" id="comicGrid"></div>
 <dialog id="infoDialog" style="padding-top: 2.2rem;"></dialog>
-<script>document.getElementById('searchInput').value = '';
-
+<script>
     let comics = [];
 
-    
-function renderComics(filter = '') {
-  const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
-  const grid = document.getElementById('comicGrid');
-  grid.innerHTML = '';
-  const sortValue = document.getElementById('sortSelect')?.value || 'release-desc';
-
-  const filtered = comics.filter(c => {
-    if (readFilter === 'read' && !localStorage.getItem(c.title)) return false;
-    if (readFilter === 'unread' && localStorage.getItem(c.title)) return false;
-    return text.includes(filter.toLowerCase());
-  });
-
-  switch (sortValue) {
-    case 'title-asc':
-      filtered.sort((a, b) => a.title.localeCompare(b.title));
-      break;
-    case 'title-desc':
-      filtered.sort((a, b) => b.title.localeCompare(a.title));
-      break;
-    case 'release-asc':
-      filtered.sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
-      break;
-    case 'release-desc':
-      filtered.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
-      break;
-  }
-
-  filtered.forEach(c => {
-    const card = document.createElement('div');
-    card.className = 'comic-card';
-    if (localStorage.getItem(c.title)) card.classList.add('read');
-
-    const badge = document.createElement('div');
-    badge.className = 'read-badge';
-    badge.textContent = 'Read';
-    card.appendChild(badge);
-
-    const img = document.createElement('img');
-    img.dataset.src = c.covers?.[0] || '';
-    img.classList.add('fade');
-    img.onload = () => img.classList.add('loaded');
-    observer.observe(img);
-    img.alt = c.title;
-    img.addEventListener('contextmenu', e => e.preventDefault());
-
-    let pressTimer;
-    let longPress = false;
-    img.addEventListener('mousedown', (event) => {
-      if (event.button !== 0) return;
-      if (document.getElementById('infoDialog').open) return;
-      longPress = false;
-      card.setAttribute('data-pressing', 'true');
-      pressTimer = setTimeout(() => {
-        if (card.getAttribute('data-pressing') === 'true') {
-          longPress = true;
-          toggleRead(c.title);
-          navigator.vibrate?.(100);
-        }
-      }, 600);
-    });
-    img.addEventListener('mouseup', () => {
-      card.setAttribute('data-pressing', 'false');
-      clearTimeout(pressTimer);
-    });
-    img.addEventListener('mouseleave', () => {
-      card.setAttribute('data-pressing', 'false');
-      clearTimeout(pressTimer);
-    });
-    img.addEventListener('click', (e) => {
-      card.setAttribute('data-pressing', 'false');
-      clearTimeout(pressTimer);
-      if (longPress) return;
-      e.preventDefault();
-      openDialog(c);
-    });
-
-    card.appendChild(img);
-    const title = document.createElement('div');
-    title.className = 'comic-title';
-    title.textContent = c.title;
-    card.appendChild(title);
-    grid.appendChild(card);
-  });
-}
-
-      const sortValue = document.getElementById('sortSelect')?.value || 'release-desc';
-      switch (sortValue) {
-        case 'title-asc':
-          filtered.sort((a, b) => a.title.localeCompare(b.title));
-          break;
-        case 'title-desc':
-          filtered.sort((a, b) => b.title.localeCompare(a.title));
-          break;
-        case 'release-asc':
-          filtered.sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
-          break;
-        case 'release-desc':
-          filtered.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
-          break;
-      }
-        
+    function renderComics(filter = '') {
+      const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
+      const grid = document.getElementById('comicGrid');
+      grid.innerHTML = '';
+      const filtered = comics.filter(c => {
+        if (readFilter === 'read' && !localStorage.getItem(c.title)) return false;
+        if (readFilter === 'unread' && localStorage.getItem(c.title)) return false;
+        const text = `${c.title} ${c.event} ${(c.characters || []).join(' ')} ${(c.writer || []).join(' ')} ${(c.artist || []).join(' ')}`.toLowerCase();
         return text.includes(filter.toLowerCase());
-      }) => sort === 'asc'
+      }).sort((a, b) => sort === 'asc'
         ? (a.issue_number || 0) - (b.issue_number || 0)
         : (b.issue_number || 0) - (a.issue_number || 0)
       );
@@ -468,13 +366,13 @@ function renderComics(filter = '') {
       const grid = document.getElementById('comicGrid');
       const value = e.target.value;
       if (value === 'auto') {
-  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))';
-} else {
+        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(160px, 1fr))';
+      } else {
         grid.style.gridTemplateColumns = `repeat(${value}, minmax(0, 1fr))`;
       }
     });
 
-    fetch("./manifest.json")
+    fetch("manifest.json")
       .then(res => res.json())
       .then(files => Promise.all(
         files.map(file => fetch(file).then(r => r.json()))
@@ -517,304 +415,7 @@ window.addEventListener('scroll', () => {
 document.getElementById('scrollTopBtn').addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
-
-
-document.getElementById('settingsToggle').addEventListener('click', () => {
-  const menu = document.getElementById('settingsMenu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-});
 </script>
 <button id="scrollTopBtn">↑</button>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle = document.getElementById('settingsToggle');
-  const menu = document.getElementById('settingsMenu');
-  if (menu) menu.style.display = 'none';
-
-  toggle?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (menu.style.display === 'none') {
-      menu.style.display = 'block';
-    } else {
-      menu.style.display = 'none';
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!menu.contains(e.target) && e.target !== toggle) {
-      menu.style.display = 'none';
-    }
-  });
-});
-</script>
-<script>
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const img = entry.target;
-      img.src = img.dataset.src;
-      observer.unobserve(img);
-    }
-  });
-});
-</script>
 </body>
 </html>
-
-        case 'title-asc':
-          filtered.sort((a, b) =&gt; a.title.localeCompare(b.title));
-          break;
-        case 'title-desc':
-          filtered.sort((a, b) =&gt; b.title.localeCompare(a.title));
-          break;
-        case 'release-asc':
-          filtered.sort((a, b) =&gt; new Date(a.release_date) - new Date(b.release_date));
-          break;
-        case 'release-desc':
-          filtered.sort((a, b) =&gt; new Date(b.release_date) - new Date(a.release_date));
-          break;
-      }
-        
-        return text.includes(filter.toLowerCase());
-      }) =&gt; sort === 'asc'
-        ? (a.issue_number || 0) - (b.issue_number || 0)
-        : (b.issue_number || 0) - (a.issue_number || 0)
-      );
-
-      filtered.forEach(c =&gt; {
-        const card = document.createElement('div');
-        card.className = 'comic-card';
-        if (localStorage.getItem(c.title)) card.classList.add('read');
-
-        const badge = document.createElement('div');
-        badge.className = 'read-badge';
-        badge.textContent = 'Read';
-        card.appendChild(badge);
-
-        const img = document.createElement('img');
-        img.dataset.src = c.covers[0];
-        img.classList.add('fade');
-        img.onload = () =&gt; img.classList.add('loaded');
-        observer.observe(img);
-        img.alt = c.title;
-        img.addEventListener('contextmenu', (e) =&gt; e.preventDefault());
-
-        let pressTimer;
-        let longPress = false;
-        img.addEventListener('mousedown', (event) =&gt; {
-          if (event.button !== 0) return;
-          if (document.getElementById('infoDialog').open) return;
-          longPress = false;
-          card.setAttribute('data-pressing', 'true');
-          pressTimer = setTimeout(() =&gt; {
-            if (card.getAttribute('data-pressing') === 'true') {
-              longPress = true;
-              toggleRead(c.title);
-              navigator.vibrate?.(100);
-            }
-          }, 600);
-        });
-        img.addEventListener('touchstart', (event) =&gt; {
-          if (document.getElementById('infoDialog').open) return;
-          longPress = false;
-          card.setAttribute('data-pressing', 'true');
-          pressTimer = setTimeout(() =&gt; {
-            
-            if (card.getAttribute('data-pressing') === 'true') {
-              longPress = true;
-              toggleRead(c.title);
-              navigator.vibrate?.(100);
-            }
-          }, 600);
-        });
-        img.addEventListener('mouseup', () =&gt; {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-        });
-        img.addEventListener('touchend', () =&gt; {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-        });
-        img.addEventListener('mouseleave', () =&gt; {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-        });
-        img.addEventListener('click', (e) =&gt; {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-          if (longPress) return;
-          e.preventDefault();
-          openDialog(c);
-        });
-
-        card.appendChild(img);
-
-        const title = document.createElement('div');
-        title.className = 'comic-title';
-        title.textContent = c.title;
-        card.appendChild(title);
-
-        grid.appendChild(card);
-      });
-    }
-
-    function openDialog(comic) {
-      const dialog = document.getElementById('infoDialog');
-      dialog.innerHTML = `
-        <button onclick="document.getElementById('infoDialog').close()" onmouseout="this.style.background='transparent'" onmouseover="this.style.background='#333'" style="position: absolute; top: 8px; right: 12px; background: transparent; border: none; font-size: 1.5rem; color: #ccc; cursor: pointer; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease;">×</button>
-<h2>${comic.title}</h2>
-<p><strong>Release:</strong> ${comic.release_date || ''}</p>
-<p><strong>Event:</strong> ${comic.event || '-'}</p>
-<p><strong>Format:</strong> ${comic.format || ''} | ${comic.page_count || ''} pages</p>
-<p><strong>Writer:</strong> ${(comic.writer || []).join(', ')}</p>
-<p><strong>Artist:</strong> ${(comic.artist || []).join(', ')}</p>
-<p><strong>Characters:</strong> ${(comic.characters || []).join(', ')}</p>
-<p>${comic.description || ''}</p>
-<p><a href="${comic.url}" target="_blank">🔗 View on League of Comic Geeks</a></p>
-      `;
-      dialog.showModal();
-      dialog.addEventListener('click', (event) =&gt; {
-        const rect = dialog.getBoundingClientRect();
-        const isInDialog = (
-          event.clientX &gt;= rect.left &amp;&amp;
-          event.clientX &lt;= rect.right &amp;&amp;
-          event.clientY &gt;= rect.top &amp;&amp;
-          event.clientY &lt;= rect.bottom
-        );
-        if (!isInDialog) dialog.close();
-      }, { once: true });
-    }
-
-    function toggleRead(title) {
-      if (localStorage.getItem(title)) {
-        localStorage.removeItem(title);
-      } else {
-        localStorage.setItem(title, 'read');
-      }
-
-      document.getElementById('infoDialog').close();
-      const grid = document.getElementById('comicGrid');
-      const cards = grid.querySelectorAll('.comic-card');
-      cards.forEach(card =&gt; {
-        const titleEl = card.querySelector('.comic-title');
-        if (titleEl?.textContent === title) {
-          card.classList.toggle('read');
-        }
-      });
-      updateProgress();
-
-      setTimeout(() =&gt; {
-        const cards = document.querySelectorAll('.comic-card');
-        cards.forEach(card =&gt; {
-          if (card.querySelector('.comic-title')?.textContent === title) {
-            card.style.boxShadow = '0 0 10px #4caf50';
-            setTimeout(() =&gt; card.style.boxShadow = '', 250);
-          }
-        });
-      }, 0);
-    }
-
-    function updateProgress() {
-      const total = comics.length;
-      const read = comics.filter(c =&gt; localStorage.getItem(c.title)).length;
-      const percent = total ? ((read / total) * 100).toFixed(2) : 0;
-      document.getElementById('progressBar').style.width = `${percent}%`;
-      const text = `${read} / ${total} read (${percent}%)`;
-      document.getElementById('progressText').textContent = text;
-    }
-
-    document.getElementById('searchInput').addEventListener('input', e =&gt; {
-      renderComics(e.target.value);
-    });
-    document.getElementById('sortSelect').addEventListener('change', () =&gt; {
-      renderComics(document.getElementById('searchInput').value);
-    });
-
-    document.getElementById('readFilterSelect').addEventListener('change', () =&gt; {
-      renderComics(document.getElementById('searchInput').value);
-    });
-
-    document.getElementById('columnSelect').addEventListener('change', (e) =&gt; {
-      const grid = document.getElementById('comicGrid');
-      const value = e.target.value;
-      if (value === 'auto') {
-  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))';
-} else {
-        grid.style.gridTemplateColumns = `repeat(${value}, minmax(0, 1fr))`;
-      }
-    });
-
-    fetch("./manifest.json")
-      .then(res =&gt; res.json())
-      .then(files =&gt; Promise.all(
-        files.map(file =&gt; fetch(file).then(r =&gt; r.json()))
-      ))
-      .then(results =&gt; {
-        comics = results.flat();
-        renderComics();
-        updateProgress();
-      });
-  // Preload observer for intelligent loading
-const observer = new IntersectionObserver(entries =&gt; {
-  entries.forEach(entry =&gt; {
-    if (entry.isIntersecting) {
-      const img = entry.target;
-      img.src = img.dataset.src;
-      observer.unobserve(img);
-    }
-  });
-}, {
-  rootMargin: '600px'
-});
-document.getElementById('settingsToggle').addEventListener('click', () =&gt; {
-  const menu = document.getElementById('settingsMenu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-});
-
-document.addEventListener('click', (e) =&gt; {
-  const toggle = document.getElementById('settingsToggle');
-  const menu = document.getElementById('settingsMenu');
-  if (!menu.contains(e.target) &amp;&amp; e.target !== toggle) {
-    menu.style.display = 'none';
-  }
-});
-
-window.addEventListener('scroll', () =&gt; {
-  const btn = document.getElementById('scrollTopBtn');
-  btn.style.display = window.scrollY &gt; 300 ? 'block' : 'none';
-});
-
-document.getElementById('scrollTopBtn').addEventListener('click', () =&gt; {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-
-document.getElementById('settingsToggle').addEventListener('click', () =&gt; {
-  const menu = document.getElementById('settingsMenu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-});
-
-<button id="scrollTopBtn">↑</button>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle = document.getElementById('settingsToggle');
-  const menu = document.getElementById('settingsMenu');
-  if (menu) menu.style.display = 'none';
-
-  toggle?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (menu.style.display === 'none') {
-      menu.style.display = 'block';
-    } else {
-      menu.style.display = 'none';
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!menu.contains(e.target) && e.target !== toggle) {
-      menu.style.display = 'none';
-    }
-  });
-});
-</script>
-
