@@ -35,7 +35,7 @@
     }
     .comic-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
   padding: 1rem;
   align-items: start;
@@ -159,6 +159,14 @@
   background: #666;
   transform: translateY(-2px);
 }
+
+
+.comic-grid {
+  justify-content: start;
+}
+.comic-card {
+  
+}
 </style>
 </head>
 <body>
@@ -179,7 +187,10 @@
 <option value="5">5 Columns</option>
 </select>
 <label style="font-size: 0.75rem; display: block; margin: 0.5rem 0 0.25rem;">Sort</label>
-<select id="sortSelect"><option value="title-asc">A–Z</option><option value="title-desc">Z–A</option><option value="release-desc">Release Date (new to old)</option><option value="release-asc">Release Date (old to new)</option></select>
+<select id="sortSelect">
+<option value="asc">Ascending ↑</option>
+<option value="desc">Descending ↓</option>
+</select>
 <label style="font-size: 0.75rem; display: block; margin: 0.5rem 0 0.25rem;">Filter</label>
 <select id="readFilterSelect">
 <option value="all">All</option>
@@ -191,13 +202,15 @@
 <button id="scrollTopBtn">↑</button>
 <div class="comic-grid" id="comicGrid"></div>
 <dialog id="infoDialog" style="padding-top: 2.2rem;"></dialog>
-<script>
+<script>document.getElementById('searchInput').value = '';
+
     let comics = [];
 
     function renderComics(filter = '') {
       const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
       const grid = document.getElementById('comicGrid');
       grid.innerHTML = '';
+      const sort = document.getElementById('sortSelect').value;
       const filtered = comics.filter(c => {
         if (readFilter === 'read' && !localStorage.getItem(c.title)) return false;
         if (readFilter === 'unread' && localStorage.getItem(c.title)) return false;
@@ -365,13 +378,13 @@
       const grid = document.getElementById('comicGrid');
       const value = e.target.value;
       if (value === 'auto') {
-        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(160px, 1fr))';
-      } else {
+  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))';
+} else {
         grid.style.gridTemplateColumns = `repeat(${value}, minmax(0, 1fr))`;
       }
     });
 
-    fetch("manifest.json")
+    fetch("./manifest.json")
       .then(res => res.json())
       .then(files => Promise.all(
         files.map(file => fetch(file).then(r => r.json()))
@@ -414,18 +427,34 @@ window.addEventListener('scroll', () => {
 document.getElementById('scrollTopBtn').addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+
+document.getElementById('settingsToggle').addEventListener('click', () => {
+  const menu = document.getElementById('settingsMenu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+});
 </script>
 <button id="scrollTopBtn">↑</button>
-
 <script>
-fetch("./manifest.json")
-  .then(res => res.json())
-  .then(files => Promise.all(files.map(file => fetch(file).then(r => r.json()))))
-  .then(results => {
-    comics = results.flat();
-    renderComics();
-    updateProgress();
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('settingsToggle');
+  const menu = document.getElementById('settingsMenu');
+  if (menu) menu.style.display = 'none';
+
+  toggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (menu.style.display === 'none') {
+      menu.style.display = 'block';
+    } else {
+      menu.style.display = 'none';
+    }
   });
-</script>
-</body>
+
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target) && e.target !== toggle) {
+      menu.style.display = 'none';
+    }
+  });
+});
+</script></body>
 </html>
