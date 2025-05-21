@@ -202,7 +202,8 @@
 <button id="scrollTopBtn">↑</button>
 <div class="comic-grid" id="comicGrid"></div>
 <dialog id="infoDialog" style="padding-top: 2.2rem;"></dialog>
-<script>
+<script>document.getElementById('searchInput').value = '';
+
     let comics = [];
 
     function renderComics(filter = '') {
