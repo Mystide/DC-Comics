@@ -187,10 +187,7 @@
 <option value="5">5 Columns</option>
 </select>
 <label style="font-size: 0.75rem; display: block; margin: 0.5rem 0 0.25rem;">Sort</label>
-<select id="sortSelect">
-<option value="asc">Ascending ↑</option>
-<option value="desc">Descending ↓</option>
-</select>
+<select id="sortSelect"><option value="title-asc">A–Z</option><option value="title-desc">Z–A</option><option value="release-desc">Release Date (new to old)</option><option value="release-asc">Release Date (old to new)</option></select>
 <label style="font-size: 0.75rem; display: block; margin: 0.5rem 0 0.25rem;">Filter</label>
 <select id="readFilterSelect">
 <option value="all">All</option>
@@ -210,13 +207,30 @@
       const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
       const grid = document.getElementById('comicGrid');
       grid.innerHTML = '';
-      const sort = document.getElementById('sortSelect').value;
+      
       const filtered = comics.filter(c => {
         if (readFilter === 'read' && !localStorage.getItem(c.title)) return false;
         if (readFilter === 'unread' && localStorage.getItem(c.title)) return false;
         const text = `${c.title} ${c.event} ${(c.characters || []).join(' ')} ${(c.writer || []).join(' ')} ${(c.artist || []).join(' ')}`.toLowerCase();
+
+      const sortValue = document.getElementById('sortSelect')?.value || 'release-desc';
+      switch (sortValue) {
+        case 'title-asc':
+          filtered.sort((a, b) => a.title.localeCompare(b.title));
+          break;
+        case 'title-desc':
+          filtered.sort((a, b) => b.title.localeCompare(a.title));
+          break;
+        case 'release-asc':
+          filtered.sort((a, b) => new Date(a.release_date) - new Date(b.release_date));
+          break;
+        case 'release-desc':
+          filtered.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+          break;
+      }
+        
         return text.includes(filter.toLowerCase());
-      }).sort((a, b) => sort === 'asc'
+      }) => sort === 'asc'
         ? (a.issue_number || 0) - (b.issue_number || 0)
         : (b.issue_number || 0) - (a.issue_number || 0)
       );
