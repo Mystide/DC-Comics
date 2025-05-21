@@ -377,8 +377,8 @@
       const grid = document.getElementById('comicGrid');
       const value = e.target.value;
       if (value === 'auto') {
-        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(160px, 1fr))';
-      } else {
+  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))';
+} else {
         grid.style.gridTemplateColumns = `repeat(${value}, minmax(0, 1fr))`;
       }
     });
