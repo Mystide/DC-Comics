@@ -207,11 +207,7 @@
       const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
       const grid = document.getElementById('comicGrid');
       grid.innerHTML = '';
-      const sort = document.getElementById('sortSelect').value;
-      const filtered = comics.filter(c => {
-        if (readFilter === 'read' && !localStorage.getItem(c.title)) return false;
-        if (readFilter === 'unread' && localStorage.getItem(c.title)) return false;
-        const text = `${c.title} ${c.event} ${(c.characters || []).join(' ')} ${(c.writer || []).join(' ')} ${(c.artist || []).join(' ')}`.toLowerCase();
+      
         return text.includes(filter.toLowerCase());
       }).sort((a, b) => sort === 'asc'
         ? (a.issue_number || 0) - (b.issue_number || 0)
