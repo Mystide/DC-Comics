@@ -1,16 +1,6 @@
-// app.js
+// app.js (div statt img für mobile Kompatibilität)
 
 let comicData = [];
-
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const img = entry.target;
-      img.src = img.dataset.src;
-      observer.unobserve(img);
-    }
-  });
-}, { rootMargin: '600px' });
 
 function getStorageKey(comic) {
   return `${comic.series || 'unknown'}_${comic.issue_number || comic.title}`;
@@ -86,12 +76,15 @@ function renderComics(filter = '') {
     badge.textContent = 'Read';
     card.appendChild(badge);
 
-    const img = document.createElement('img');
-    img.dataset.src = c.covers[0];
-    img.alt = c.title;
-    img.loading = 'lazy';
-    img.onload = () => img.classList.add('loaded');
-    observer.observe(img);
+    const cover = document.createElement('div');
+    cover.className = 'comic-cover';
+    cover.style.width = '100%';
+    cover.style.aspectRatio = '2 / 3';
+    cover.style.borderRadius = '4px';
+    cover.style.backgroundImage = `url('${c.covers[0]}')`;
+    cover.style.backgroundSize = 'cover';
+    cover.style.backgroundPosition = 'center';
+    cover.style.transition = 'opacity 0.3s ease-in';
 
     let pressTimer;
     let longPress = false;
@@ -106,14 +99,14 @@ function renderComics(filter = '') {
 
     const cancelPress = () => clearTimeout(pressTimer);
 
-    img.addEventListener('mousedown', e => { if (e.button === 0) startPress(); });
-    img.addEventListener('touchstart', startPress);
-    img.addEventListener('mouseup', cancelPress);
-    img.addEventListener('mouseleave', cancelPress);
-    img.addEventListener('touchend', cancelPress);
-    img.addEventListener('contextmenu', e => e.preventDefault());
+    cover.addEventListener('mousedown', e => { if (e.button === 0) startPress(); });
+    cover.addEventListener('touchstart', startPress);
+    cover.addEventListener('mouseup', cancelPress);
+    cover.addEventListener('mouseleave', cancelPress);
+    cover.addEventListener('touchend', cancelPress);
+    cover.addEventListener('contextmenu', e => e.preventDefault());
 
-    img.addEventListener('click', e => {
+    cover.addEventListener('click', e => {
       if (longPress) return;
       e.preventDefault();
       openDialog(c);
@@ -123,7 +116,7 @@ function renderComics(filter = '') {
     title.className = 'comic-title';
     title.textContent = c.title;
 
-    card.append(img, title);
+    card.append(cover, title);
     grid.appendChild(card);
   });
 
