@@ -7,31 +7,16 @@ function getStorageKey(comic) {
 }
 
 function toggleReadByKey(key) {
-  const card = document.querySelector(`.comic-card[data-key="${key}"]`);
-  if (!card) return;
-
-  if (card.classList.contains('read')) {
+  if (localStorage.getItem(key)) {
     localStorage.removeItem(key);
-    card.classList.remove('read');
   } else {
     localStorage.setItem(key, 'read');
-    card.classList.add('read');
   }
 
   updateProgress();
-}
-    if (card.classList.contains('read')) {
-      card.style.outline = '2px solid #3a9440';
-      card.style.outlineOffset = '-2px';
-    } else {
-      card.style.outline = 'none';
-    }
-  } else {
-      card.style.outline = 'none';
-    }
-    } else {
-      card.style.outline = 'none';
-    }
+
+  const card = document.querySelector(`.comic-card[data-key="${key}"]`);
+  if (card) card.classList.toggle('read');
 }
 
 function updateProgress() {
@@ -83,11 +68,7 @@ function renderComics(filter = '') {
     const key = getStorageKey(c);
     card.className = 'comic-card';
     card.dataset.key = key;
-    if (localStorage.getItem(key)) {
-    card.classList.add('read');
-  } else {
-    card.classList.remove('read');
-  }
+    if (localStorage.getItem(key)) card.classList.add('read');
 
     const badge = document.createElement('div');
     badge.className = 'read-badge';
