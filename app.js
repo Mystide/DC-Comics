@@ -1,4 +1,4 @@
-// app.js (div statt img für mobile Kompatibilität)
+// app.js – mit numerisch verbessertem Titel-Sortierverhalten
 
 let comicData = [];
 
@@ -35,6 +35,10 @@ function openDialog(comic) {
   document.getElementById('infoDialog').showModal();
 }
 
+function extractSortable(c) {
+  return (c.title || '').toLowerCase().replace(/[^a-z0-9#]+/g, ' ');
+}
+
 function renderComics(filter = '') {
   const sort = document.getElementById('sortSelect').value;
   const readFilter = document.getElementById('readFilterSelect').value;
@@ -51,16 +55,11 @@ function renderComics(filter = '') {
     })
     .sort((a, b) => {
       switch (sort) {
-        case 'title-asc':
-          return (a.title || '').localeCompare(b.title || '');
-        case 'title-desc':
-          return (b.title || '').localeCompare(a.title || '');
-        case 'date-asc':
-          return new Date(a.release_date || 0) - new Date(b.release_date || 0);
-        case 'date-desc':
-          return new Date(b.release_date || 0) - new Date(a.release_date || 0);
-        default:
-          return 0;
+        case 'title-asc': return extractSortable(a).localeCompare(extractSortable(b), undefined, { numeric: true });
+        case 'title-desc': return extractSortable(b).localeCompare(extractSortable(a), undefined, { numeric: true });
+        case 'date-asc': return new Date(a.release_date || 0) - new Date(b.release_date || 0);
+        case 'date-desc': return new Date(b.release_date || 0) - new Date(a.release_date || 0);
+        default: return 0;
       }
     });
 
@@ -164,6 +163,10 @@ document.getElementById('scrollTopBtn').addEventListener('click', () => {
 window.addEventListener('scroll', () => {
   const btn = document.getElementById('scrollTopBtn');
   btn.style.display = window.scrollY > 300 ? 'block' : 'none';
+});
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('infoDialog').close();
 });
 
 fetch('./manifest.json')
