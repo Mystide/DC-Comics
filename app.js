@@ -17,6 +17,7 @@ function toggleReadByKey(key) {
   } else {
     localStorage.setItem(key, 'read');
     card.classList.add('read');
+    card.style.transition = 'outline 0.3s ease';
     card.style.outline = '1px solid #2e7d32';
     card.style.outlineOffset = '-1px';
   }
