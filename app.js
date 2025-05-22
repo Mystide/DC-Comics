@@ -12,11 +12,19 @@ const observer = new IntersectionObserver(entries => {
   });
 }, { rootMargin: '600px' });
 
+function getStorageKey(comic) {
+  return `${comic.series || 'unknown'}_${comic.issue_number || comic.title}`;
+}
+
 function toggleRead(title) {
-  if (localStorage.getItem(title)) {
-    localStorage.removeItem(title);
+  const comic = comicData.find(c => c.title === title);
+  if (!comic) return;
+  const key = getStorageKey(comic);
+
+  if (localStorage.getItem(key)) {
+    localStorage.removeItem(key);
   } else {
-    localStorage.setItem(title, 'read');
+    localStorage.setItem(key, 'read');
   }
 
   updateProgress();
@@ -32,7 +40,7 @@ function toggleRead(title) {
 
 function updateProgress() {
   const total = comicData.length;
-  const read = comicData.filter(c => localStorage.getItem(c.title)).length;
+  const read = comicData.filter(c => localStorage.getItem(getStorageKey(c))).length;
   const percent = total ? ((read / total) * 100).toFixed(1) : 0;
   document.getElementById('progressBar').style.width = `${percent}%`;
   document.getElementById('progressText').textContent = `${read} / ${total} read (${percent}%)`;
@@ -42,6 +50,12 @@ function openDialog(comic) {
   document.getElementById('dialogTitle').textContent = comic.title;
   document.getElementById('dialogIssue').textContent = comic.issue_number || '-';
   document.getElementById('dialogDate').textContent = comic.release_date || '-';
+  if (!document.getElementById('dialogSeries')) {
+    const p = document.createElement('p');
+    p.innerHTML = '<strong>Series:</strong> <span id="dialogSeries"></span>';
+    document.getElementById('infoDialog').insertBefore(p, document.getElementById('scrollTopBtn') || null);
+  }
+  document.getElementById('dialogSeries').textContent = comic.series || '-';
   document.getElementById('infoDialog').showModal();
 }
 
@@ -53,7 +67,7 @@ function renderComics(filter = '') {
 
   const filtered = comicData
     .filter(c => {
-      const isRead = localStorage.getItem(c.title);
+      const isRead = localStorage.getItem(getStorageKey(c));
       if (readFilter === 'read' && !isRead) return false;
       if (readFilter === 'unread' && isRead) return false;
       const text = `${c.title} ${c.event} ${(c.characters || []).join(' ')} ${(c.writer || []).join(' ')} ${(c.artist || []).join(' ')}`.toLowerCase();
@@ -77,7 +91,7 @@ function renderComics(filter = '') {
   filtered.forEach(c => {
     const card = document.createElement('div');
     card.className = 'comic-card';
-    if (localStorage.getItem(c.title)) card.classList.add('read');
+    if (localStorage.getItem(getStorageKey(c))) card.classList.add('read');
 
     const badge = document.createElement('div');
     badge.className = 'read-badge';
