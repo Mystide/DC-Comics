@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comic Guide Viewer</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
@@ -15,14 +15,13 @@
     .search-bar {
       display: flex;
       flex-wrap: wrap;
-      justify-content: flex-start;
+      align-items: center;
       gap: 0.3rem;
       padding: 0.5rem;
       background: #181818;
       position: sticky;
       top: 4px;
       z-index: 999;
-      align-items: center;
     }
     .search-bar input,
     .search-bar select,
@@ -39,7 +38,6 @@
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 1rem;
       padding: 1rem;
-      justify-content: start;
     }
     .comic-card {
       background: #1c1c1c;
@@ -53,26 +51,20 @@
       transition: box-shadow 0.3s ease, transform 0.2s ease;
     }
     .comic-card:hover {
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 12px rgba(255,255,255,0.1);
       transform: translateY(-3px);
     }
-    .comic-card.read {
-      opacity: 0.6;
-    }
-    .comic-card.read .read-badge {
-      display: block;
-    }
+    .comic-card.read { opacity: 0.6; }
+    .comic-card.read .read-badge { display: block; }
     .comic-card img {
       width: 100%;
-      aspect-ratio: 2 / 3;
+      aspect-ratio: 2/3;
       border-radius: 4px;
       object-fit: cover;
       opacity: 0;
       transition: opacity 0.3s ease-in;
     }
-    .comic-card img.loaded {
-      opacity: 1;
-    }
+    .comic-card img.loaded { opacity: 1; }
     .comic-title {
       font-weight: bold;
       font-size: 0.9rem;
@@ -95,20 +87,16 @@
       display: none;
     }
     dialog {
-      position: relative;
       background: #1e1e1e;
       color: #fff;
       padding: 1.5rem;
       border: none;
       border-radius: 10px;
-      max-width: 90%;
-      width: 400px;
+      width: 90%;
+      max-width: 400px;
       box-shadow: 0 0 20px rgba(0,0,0,0.6);
-      animation: fadeIn 0.3s ease-out;
     }
-    dialog::backdrop {
-      background: rgba(0, 0, 0, 0.6);
-    }
+    dialog::backdrop { background: rgba(0,0,0,0.6); }
     dialog h2 {
       margin-top: 0;
       font-size: 1.2rem;
@@ -118,19 +106,12 @@
     dialog p {
       font-size: 0.9rem;
       margin: 0.4rem 0;
-      line-height: 1.4;
     }
     dialog a {
       color: #4dabf7;
       text-decoration: none;
     }
-    dialog a:hover {
-      text-decoration: underline;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    dialog a:hover { text-decoration: underline; }
     #scrollTopBtn {
       position: fixed;
       bottom: 20px;
@@ -156,26 +137,26 @@
   </style>
 </head>
 <body>
-  <div id="progressBarWrap" style="width: 100%; height: 4px; background: #333; border-radius: 4px; position: sticky; top: 0; z-index: 1000;">
-    <div id="progressBar" style="height: 100%; width: 0%; background: #4caf50; border-radius: 4px;"></div>
+  <div id="progressBarWrap" style="height: 4px; background: #333; position: sticky; top: 0; z-index: 1000;">
+    <div id="progressBar" style="height: 100%; width: 0%; background: #4caf50;"></div>
   </div>
   <div class="search-bar">
     <button id="settingsToggle">⚙️</button>
-    <input id="searchInput" type="text" placeholder="Search..." title="Search title, event, characters, writer, artist"/>
-    <div id="progressText" style="font-size: 0.75rem; color: #bbb; margin-left: auto;">0 / 0 read (0%)</div>
-    <div id="settingsMenu" style="display:none; position:absolute; top:100%; left:0; background:#181818; border:1px solid #333; padding:0.5rem; border-radius:6px; box-shadow:0 0 10px rgba(0,0,0,0.4); z-index:9999;">
+    <input id="searchInput" type="text" placeholder="Search..." />
+    <div id="progressText" style="margin-left: auto; font-size: 0.75rem; color: #bbb;">0 / 0 read (0%)</div>
+    <div id="settingsMenu" style="display: none; position: absolute; background: #181818; border: 1px solid #333; padding: 0.5rem; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.4);">
       <label style="font-size: 0.75rem;">Columns</label>
       <select id="columnSelect">
         <option value="auto">Auto</option>
-        <option value="2">2 Columns</option>
-        <option value="3">3 Columns</option>
-        <option value="4">4 Columns</option>
-        <option value="5">5 Columns</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
       </select>
       <label style="font-size: 0.75rem;">Sort</label>
       <select id="sortSelect">
-        <option value="asc">Ascending ↑</option>
-        <option value="desc">Descending ↓</option>
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
       </select>
       <label style="font-size: 0.75rem;">Filter</label>
       <select id="readFilterSelect">
@@ -185,11 +166,9 @@
       </select>
     </div>
   </div>
-  <div class="comic-grid" id="comicGrid"></div>
-  <dialog id="infoDialog" style="padding-top: 2.2rem;"></dialog>
+  <div id="comicGrid" class="comic-grid"></div>
+  <dialog id="infoDialog"></dialog>
   <button id="scrollTopBtn">↑</button>
-  <script>
-    // Der JS-Teil bleibt unverändert, da bereits optimiert. Optional kann ich auch diesen reduzieren.
-  </script>
+  <script src="app.js"></script> <!-- Dein JavaScript kommt extern hier rein -->
 </body>
 </html>
