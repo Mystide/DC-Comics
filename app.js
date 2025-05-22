@@ -15,12 +15,9 @@ function toggleReadByKey(key) {
   if (isRead) {
     localStorage.removeItem(key);
     card.classList.remove('read');
-    card.style.outline = 'none';
   } else {
     localStorage.setItem(key, 'read');
     card.classList.add('read');
-    card.style.outline = '2px solid #3a9440';
-    card.style.outlineOffset = '-2px';
   }
 
   updateProgress();
@@ -89,12 +86,10 @@ function renderComics(filter = '') {
     card.className = 'comic-card';
     card.dataset.key = key;
     if (localStorage.getItem(key)) {
-      card.classList.add('read');
-      card.style.outline = '2px solid #3a9440';
-      card.style.outlineOffset = '-2px';
-    } else {
-      card.style.outline = 'none';
-    }
+    card.classList.add('read');
+  } else {
+    card.classList.remove('read');
+  }
 
     const badge = document.createElement('div');
     badge.className = 'read-badge';
