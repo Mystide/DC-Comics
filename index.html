@@ -27,52 +27,35 @@
     }
     .search-bar input,
     .search-bar button {
-  height: 36px;
-  line-height: 1.2;
-  padding: 0.35rem 0.6rem;
-  border: none;
-  border-radius: 6px;
-  background: #292929;
-  color: #f0f0f0;
-  font-size: 0.8rem;
-  box-sizing: border-box;
-}
+      padding: 0.35rem 0.6rem;
+      border: none;
+      border-radius: 6px;
+      background: #292929;
+      color: #f0f0f0;
+      font-size: 0.8rem;
+    }
     #settingsMenu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.5rem;
-  background: #181818;
-  border: 1px solid #333;
-  padding: 0.6rem 0.75rem;
-  border-radius: 6px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.6rem;
-  z-index: 998;
-  min-width: 180px;
-}
-    #settingsMenu label {
-  display: block;
-  font-size: 0.75rem;
-  margin-bottom: 0.2rem;
-}
-
-#settingsMenu select {
-  display: block;
-  width: 100%;
-  font-size: 0.8rem;
-  padding: 0.35rem 0.6rem;
-  border: none;
-  border-radius: 6px;
-  background: #292929;
-  color: #f0f0f0;
-  min-height: 36px;
-  margin-bottom: 0.6rem;
-}
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 0.5rem;
+      background: #181818;
+      border: 1px solid #333;
+      padding: 0.5rem;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 998;
+    }
+    #settingsMenu label,
+    #settingsMenu select {
+      display: block;
+      width: 100%;
+      font-size: 0.75rem;
+    }
     #settingsMenu select {
       padding: 0.35rem 0.6rem;
       border: none;
@@ -178,15 +161,14 @@
     }
   </style>
 </head>
-<body onload="document.getElementById('searchInput').value = ''; document.getElementById('settingsMenu').style.display = 'none';">
+<body onload="document.getElementById('searchInput').value = ''">
   <div id="progressBarWrap" style="height: 4px; background: #333; position: sticky; top: 0; z-index: 1000;">
     <div id="progressBar" style="height: 100%; width: 0%; background: #4caf50;"></div>
   </div>
   <div class="search-bar-wrapper">
-    <div class="search-bar">$1<div style="position: relative;">
-        <input id="searchInput" type="text" placeholder="Search..." style="padding-right: 2rem;" />
-        <button id="clearSearch" style="position: absolute; top: 50%; transform: translateY(-50%); right: 0.3rem; background: none; border: none; color: #bbb; font-size: 1rem; cursor: pointer;">×</button>
-      </div>
+    <div class="search-bar">
+      <button id="settingsToggle">⚙️</button>
+      <input id="searchInput" type="text" placeholder="Search..." />
       <div id="progressText" style="margin-left: auto; font-size: 0.75rem; color: #bbb;">0 / 0 read (0%)</div>
     </div>
     <div id="settingsMenu">
@@ -224,3 +206,4 @@
   <button id="scrollTopBtn">↑</button>
   <script src="app.js"></script>
 </body>
+</html>
