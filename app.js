@@ -1,4 +1,4 @@
-// app.js – mit numerisch verbessertem Titel-Sortierverhalten
+// app.js – vollständig bereinigt, Touch-scroll-sicher, ohne defekten Code
 
 let comicData = [];
 
@@ -13,29 +13,12 @@ function toggleReadByKey(key) {
   if (card.classList.contains('read')) {
     localStorage.removeItem(key);
     card.classList.remove('read');
-    card.style.outline = 'none';
   } else {
     localStorage.setItem(key, 'read');
     card.classList.add('read');
-    card.style.transition = 'outline 0.3s ease';
-    card.style.outline = '1px solid #2e7d32';
-    card.style.outlineOffset = '-1px';
   }
 
   updateProgress();
-}
-    if (card.classList.contains('read')) {
-      card.style.outline = '2px solid #3a9440';
-      card.style.outlineOffset = '-2px';
-    } else {
-      card.style.outline = 'none';
-    }
-  } else {
-      card.style.outline = 'none';
-    }
-    } else {
-      card.style.outline = 'none';
-    }
 }
 
 function updateProgress() {
@@ -88,10 +71,10 @@ function renderComics(filter = '') {
     card.className = 'comic-card';
     card.dataset.key = key;
     if (localStorage.getItem(key)) {
-    card.classList.add('read');
-  } else {
-    card.classList.remove('read');
-  }
+      card.classList.add('read');
+    } else {
+      card.classList.remove('read');
+    }
 
     const badge = document.createElement('div');
     badge.className = 'read-badge';
