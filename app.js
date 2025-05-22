@@ -1,5 +1,3 @@
-// app.js
-
 let comicData = [];
 
 const observer = new IntersectionObserver(entries => {
@@ -56,7 +54,6 @@ function renderComics(filter = '') {
       const isRead = localStorage.getItem(c.title);
       if (readFilter === 'read' && !isRead) return false;
       if (readFilter === 'unread' && isRead) return false;
-
       const text = `${c.title} ${c.event} ${(c.characters || []).join(' ')} ${(c.writer || []).join(' ')} ${(c.artist || []).join(' ')}`.toLowerCase();
       return text.includes(filter.toLowerCase());
     })
@@ -127,8 +124,7 @@ function renderComics(filter = '') {
   updateProgress();
 }
 
-// UI Event Bindings
-
+// Event Bindings
 document.getElementById('settingsToggle').addEventListener('click', e => {
   e.stopPropagation();
   const menu = document.getElementById('settingsMenu');
@@ -146,15 +142,12 @@ document.addEventListener('click', e => {
 document.getElementById('searchInput').addEventListener('input', e => {
   renderComics(e.target.value);
 });
-
 document.getElementById('sortSelect').addEventListener('change', () => {
   renderComics(document.getElementById('searchInput').value);
 });
-
 document.getElementById('readFilterSelect').addEventListener('change', () => {
   renderComics(document.getElementById('searchInput').value);
 });
-
 document.getElementById('columnSelect').addEventListener('change', e => {
   const grid = document.getElementById('comicGrid');
   const value = e.target.value;
@@ -162,17 +155,14 @@ document.getElementById('columnSelect').addEventListener('change', e => {
     ? 'repeat(auto-fill, minmax(160px, 1fr))'
     : `repeat(${value}, minmax(0, 1fr))`;
 });
-
 document.getElementById('scrollTopBtn').addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
-
 window.addEventListener('scroll', () => {
-  const btn = document.getElementById('scrollTopBtn');
-  btn.style.display = window.scrollY > 300 ? 'block' : 'none';
+  document.getElementById('scrollTopBtn').style.display = window.scrollY > 300 ? 'block' : 'none';
 });
 
-// Load comics from manifest
+// Load comics
 fetch('./manifest.json')
   .then(res => res.json())
   .then(files => Promise.all(files.map(f => fetch(f).then(r => r.json()))))
