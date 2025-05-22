@@ -183,9 +183,10 @@
     <div id="progressBar" style="height: 100%; width: 0%; background: #4caf50;"></div>
   </div>
   <div class="search-bar-wrapper">
-    <div class="search-bar">
-      <button id="settingsToggle">⚙️</button>
-      <input id="searchInput" type="text" placeholder="Search..." />
+    <div class="search-bar">$1<div style="position: relative;">
+        <input id="searchInput" type="text" placeholder="Search..." style="padding-right: 2rem;" />
+        <button id="clearSearch" style="position: absolute; top: 50%; transform: translateY(-50%); right: 0.3rem; background: none; border: none; color: #bbb; font-size: 1rem; cursor: pointer;">×</button>
+      </div>
       <div id="progressText" style="margin-left: auto; font-size: 0.75rem; color: #bbb;">0 / 0 read (0%)</div>
     </div>
     <div id="settingsMenu">
