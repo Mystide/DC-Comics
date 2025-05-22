@@ -1,5 +1,3 @@
-// app.js – vollständig bereinigt, Touch-scroll-sicher, ohne defekten Code
-
 let comicData = [];
 
 function getStorageKey(comic) {
@@ -70,11 +68,7 @@ function renderComics(filter = '') {
     const key = getStorageKey(c);
     card.className = 'comic-card';
     card.dataset.key = key;
-    if (localStorage.getItem(key)) {
-      card.classList.add('read');
-    } else {
-      card.classList.remove('read');
-    }
+    if (localStorage.getItem(key)) card.classList.add('read');
 
     const badge = document.createElement('div');
     badge.className = 'read-badge';
@@ -93,35 +87,42 @@ function renderComics(filter = '') {
 
     let pressTimer;
     let longPress = false;
+    let touchMoved = false;
     let startX = 0;
     let startY = 0;
 
     const startPress = () => {
       longPress = false;
       pressTimer = setTimeout(() => {
-        longPress = true;
-        toggleReadByKey(key);
+        if (!touchMoved) {
+          longPress = true;
+          toggleReadByKey(key);
+        }
       }, 600);
     };
 
     const cancelPress = () => clearTimeout(pressTimer);
 
     cover.addEventListener('mousedown', e => { if (e.button === 0) startPress(); });
+    cover.addEventListener('mouseup', cancelPress);
+    cover.addEventListener('mouseleave', cancelPress);
     cover.addEventListener('touchstart', e => {
       if (e.touches.length === 1) {
+        touchMoved = false;
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
         startPress();
       }
     });
-    cover.addEventListener('mouseup', cancelPress);
-    cover.addEventListener('mouseleave', cancelPress);
-    cover.addEventListener('touchend', e => {
-      const dx = Math.abs(e.changedTouches[0].clientX - startX);
-      const dy = Math.abs(e.changedTouches[0].clientY - startY);
-      clearTimeout(pressTimer);
-      if (dx >= 10 || dy >= 10) longPress = false;
+    cover.addEventListener('touchmove', e => {
+      const dx = Math.abs(e.touches[0].clientX - startX);
+      const dy = Math.abs(e.touches[0].clientY - startY);
+      if (dx > 5 || dy > 5) {
+        touchMoved = true;
+        clearTimeout(pressTimer);
+      }
     });
+    cover.addEventListener('touchend', cancelPress);
     cover.addEventListener('contextmenu', e => e.preventDefault());
 
     cover.addEventListener('click', e => {
