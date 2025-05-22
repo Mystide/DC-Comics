@@ -1,3 +1,5 @@
+// app.js
+
 let comicData = [];
 
 const observer = new IntersectionObserver(entries => {
@@ -27,20 +29,10 @@ function updateProgress() {
 }
 
 function openDialog(comic) {
-  const dialog = document.getElementById('infoDialog');
-  dialog.innerHTML = `
-    <button onclick="document.getElementById('infoDialog').close()" style="position:absolute;top:8px;right:12px;background:transparent;border:none;font-size:1.5rem;color:#ccc;cursor:pointer;">&times;</button>
-    <h2>${comic.title}</h2>
-    <p><strong>Release:</strong> ${comic.release_date || '-'}</p>
-    <p><strong>Event:</strong> ${comic.event || '-'}</p>
-    <p><strong>Format:</strong> ${comic.format || ''} | ${comic.page_count || ''} pages</p>
-    <p><strong>Writer:</strong> ${(comic.writer || []).join(', ')}</p>
-    <p><strong>Artist:</strong> ${(comic.artist || []).join(', ')}</p>
-    <p><strong>Characters:</strong> ${(comic.characters || []).join(', ')}</p>
-    <p>${comic.description || ''}</p>
-    <p><a href="${comic.url}" target="_blank">🔗 View on League of Comic Geeks</a></p>
-  `;
-  dialog.showModal();
+  document.getElementById('dialogTitle').textContent = comic.title;
+  document.getElementById('dialogIssue').textContent = comic.issue_number || '-';
+  document.getElementById('dialogDate').textContent = comic.release_date || '-';
+  document.getElementById('infoDialog').showModal();
 }
 
 function renderComics(filter = '') {
@@ -124,7 +116,6 @@ function renderComics(filter = '') {
   updateProgress();
 }
 
-// Event Bindings
 document.getElementById('settingsToggle').addEventListener('click', e => {
   e.stopPropagation();
   const menu = document.getElementById('settingsMenu');
@@ -142,12 +133,15 @@ document.addEventListener('click', e => {
 document.getElementById('searchInput').addEventListener('input', e => {
   renderComics(e.target.value);
 });
+
 document.getElementById('sortSelect').addEventListener('change', () => {
   renderComics(document.getElementById('searchInput').value);
 });
+
 document.getElementById('readFilterSelect').addEventListener('change', () => {
   renderComics(document.getElementById('searchInput').value);
 });
+
 document.getElementById('columnSelect').addEventListener('change', e => {
   const grid = document.getElementById('comicGrid');
   const value = e.target.value;
@@ -155,14 +149,16 @@ document.getElementById('columnSelect').addEventListener('change', e => {
     ? 'repeat(auto-fill, minmax(160px, 1fr))'
     : `repeat(${value}, minmax(0, 1fr))`;
 });
+
 document.getElementById('scrollTopBtn').addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
 window.addEventListener('scroll', () => {
-  document.getElementById('scrollTopBtn').style.display = window.scrollY > 300 ? 'block' : 'none';
+  const btn = document.getElementById('scrollTopBtn');
+  btn.style.display = window.scrollY > 300 ? 'block' : 'none';
 });
 
-// Load comics
 fetch('./manifest.json')
   .then(res => res.json())
   .then(files => Promise.all(files.map(f => fetch(f).then(r => r.json()))))
