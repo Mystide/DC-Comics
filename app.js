@@ -16,11 +16,7 @@ function getStorageKey(comic) {
   return `${comic.series || 'unknown'}_${comic.issue_number || comic.title}`;
 }
 
-function toggleRead(title) {
-  const comic = comicData.find(c => c.title === title);
-  if (!comic) return;
-  const key = getStorageKey(comic);
-
+function toggleReadByKey(key) {
   if (localStorage.getItem(key)) {
     localStorage.removeItem(key);
   } else {
@@ -29,13 +25,8 @@ function toggleRead(title) {
 
   updateProgress();
 
-  const cards = document.querySelectorAll('.comic-card');
-  cards.forEach(card => {
-    const titleEl = card.querySelector('.comic-title');
-    if (titleEl?.textContent === title) {
-      card.classList.toggle('read');
-    }
-  });
+  const card = document.querySelector(`.comic-card[data-key="${key}"]`);
+  if (card) card.classList.toggle('read');
 }
 
 function updateProgress() {
@@ -50,11 +41,6 @@ function openDialog(comic) {
   document.getElementById('dialogTitle').textContent = comic.title;
   document.getElementById('dialogIssue').textContent = comic.issue_number || '-';
   document.getElementById('dialogDate').textContent = comic.release_date || '-';
-  if (!document.getElementById('dialogSeries')) {
-    const p = document.createElement('p');
-    p.innerHTML = '<strong>Series:</strong> <span id="dialogSeries"></span>';
-    document.getElementById('infoDialog').insertBefore(p, document.getElementById('scrollTopBtn') || null);
-  }
   document.getElementById('dialogSeries').textContent = comic.series || '-';
   document.getElementById('infoDialog').showModal();
 }
@@ -90,8 +76,10 @@ function renderComics(filter = '') {
 
   filtered.forEach(c => {
     const card = document.createElement('div');
+    const key = getStorageKey(c);
     card.className = 'comic-card';
-    if (localStorage.getItem(getStorageKey(c))) card.classList.add('read');
+    card.dataset.key = key;
+    if (localStorage.getItem(key)) card.classList.add('read');
 
     const badge = document.createElement('div');
     badge.className = 'read-badge';
@@ -101,6 +89,7 @@ function renderComics(filter = '') {
     const img = document.createElement('img');
     img.dataset.src = c.covers[0];
     img.alt = c.title;
+    img.loading = 'lazy';
     img.onload = () => img.classList.add('loaded');
     observer.observe(img);
 
@@ -111,7 +100,7 @@ function renderComics(filter = '') {
       longPress = false;
       pressTimer = setTimeout(() => {
         longPress = true;
-        toggleRead(c.title);
+        toggleReadByKey(key);
       }, 600);
     };
 
