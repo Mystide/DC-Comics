@@ -136,11 +136,6 @@
       font-size: 0.9rem;
       margin: 0.4rem 0;
     }
-    dialog a {
-      color: #4dabf7;
-      text-decoration: none;
-    }
-    dialog a:hover { text-decoration: underline; }
     #scrollTopBtn {
       position: fixed;
       bottom: 20px;
@@ -165,7 +160,7 @@
     }
   </style>
 </head>
-<body onload="document.getElementById('searchInput').value = '';">
+<body onload="document.getElementById('searchInput').value = ''">
   <div id="progressBarWrap" style="height: 4px; background: #333; position: sticky; top: 0; z-index: 1000;">
     <div id="progressBar" style="height: 100%; width: 0%; background: #4caf50;"></div>
   </div>
@@ -185,12 +180,12 @@
         <option value="5">5</option>
       </select>
       <label for="sortSelect">Sort</label>
-<select id="sortSelect">
-  <option value="title-asc">A–Z</option>
-  <option value="title-desc">Z–A</option>
-  <option value="date-desc">Release Date (new to old)</option>
-  <option value="date-asc">Release Date (old to new)</option>
-</select>
+      <select id="sortSelect">
+        <option value="title-asc">A–Z</option>
+        <option value="title-desc">Z–A</option>
+        <option value="date-desc">Release Date (new to old)</option>
+        <option value="date-asc">Release Date (old to new)</option>
+      </select>
       <label for="readFilterSelect">Filter</label>
       <select id="readFilterSelect">
         <option value="all">All</option>
@@ -200,7 +195,12 @@
     </div>
   </div>
   <div id="comicGrid" class="comic-grid"></div>
-  <dialog id="infoDialog"></dialog>
+  <dialog id="infoDialog">
+    <button onclick="this.parentElement.close()" style="position:absolute;top:8px;right:12px;background:transparent;border:none;font-size:1.5rem;color:#ccc;cursor:pointer;">&times;</button>
+    <h2 id="dialogTitle"></h2>
+    <p><strong>Issue:</strong> <span id="dialogIssue"></span></p>
+    <p><strong>Release:</strong> <span id="dialogDate"></span></p>
+  </dialog>
   <button id="scrollTopBtn">↑</button>
   <script src="app.js"></script>
 </body>
