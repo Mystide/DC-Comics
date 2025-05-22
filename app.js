@@ -78,9 +78,13 @@ function renderComics(filter = '') {
     const key = getStorageKey(c);
     card.className = 'comic-card';
     card.dataset.key = key;
-    if (localStorage.getItem(key)) card.classList.add('read');
-    card.style.outline = '2px solid #3a9440';
-    card.style.outlineOffset = '-2px';
+    if (localStorage.getItem(key)) {
+      card.classList.add('read');
+      card.style.outline = '2px solid #3a9440';
+      card.style.outlineOffset = '-2px';
+    } else {
+      card.style.outline = 'none';
+    }
 
     const badge = document.createElement('div');
     badge.className = 'read-badge';
