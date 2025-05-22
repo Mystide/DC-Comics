@@ -13,11 +13,21 @@ const observer = new IntersectionObserver(entries => {
 }, { rootMargin: '600px' });
 
 function toggleRead(title) {
-  localStorage.getItem(title)
-    ? localStorage.removeItem(title)
-    : localStorage.setItem(title, 'read');
+  if (localStorage.getItem(title)) {
+    localStorage.removeItem(title);
+  } else {
+    localStorage.setItem(title, 'read');
+  }
+
   updateProgress();
-  renderComics(document.getElementById('searchInput').value);
+
+  const cards = document.querySelectorAll('.comic-card');
+  cards.forEach(card => {
+    const titleEl = card.querySelector('.comic-title');
+    if (titleEl?.textContent === title) {
+      card.classList.toggle('read');
+    }
+  });
 }
 
 function updateProgress() {
