@@ -110,6 +110,8 @@ function renderComics(filter = '') {
 
     let pressTimer;
     let longPress = false;
+    let startX = 0;
+    let startY = 0;
 
     const startPress = () => {
       longPress = false;
@@ -122,10 +124,24 @@ function renderComics(filter = '') {
     const cancelPress = () => clearTimeout(pressTimer);
 
     cover.addEventListener('mousedown', e => { if (e.button === 0) startPress(); });
-    cover.addEventListener('touchstart', startPress);
+    cover.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        startPress();
+      }
+    });
     cover.addEventListener('mouseup', cancelPress);
     cover.addEventListener('mouseleave', cancelPress);
-    cover.addEventListener('touchend', cancelPress);
+    cover.addEventListener('touchend', e => {
+      const dx = Math.abs(e.changedTouches[0].clientX - startX);
+      const dy = Math.abs(e.changedTouches[0].clientY - startY);
+      if (dx < 10 && dy < 10) {
+        cancelPress();
+      } else {
+        clearTimeout(pressTimer);
+      }
+    });
     cover.addEventListener('contextmenu', e => e.preventDefault());
 
     cover.addEventListener('click', e => {
