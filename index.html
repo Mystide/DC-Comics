@@ -453,5 +453,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-</script></body>
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const sortSelect = document.getElementById('sortSelect');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      renderComics(document.getElementById('searchInput')?.value || '');
+    });
+  }
+});
+</script>
+</body>
 </html>
