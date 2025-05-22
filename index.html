@@ -187,7 +187,13 @@
 <option value="5">5 Columns</option>
 </select>
 <label style="font-size: 0.75rem; display: block; margin: 0.5rem 0 0.25rem;">Sort</label>
-<select id="sortSelect"><option value="title-asc">A–Z</option><option value="title-desc">Z–A</option><option value="release-desc">Release Date (new to old)</option><option value="release-asc">Release Date (old to new)</option></select>
+<select id="sortSelect">
+  <option value="title-asc">A–Z</option>
+  <option value="title-desc">Z–A</option>
+  <option value="release-desc">Release Date (new to old)</option>
+  <option value="release-asc">Release Date (old to new)</option>
+</select>
+
 <label style="font-size: 0.75rem; display: block; margin: 0.5rem 0 0.25rem;">Filter</label>
 <select id="readFilterSelect">
 <option value="all">All</option>
@@ -203,8 +209,7 @@
 
     let comics = [];
 
-    
-function renderComics(filter = '') {
+    function renderComics(filter = '') {
   const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
   const grid = document.getElementById('comicGrid');
   grid.innerHTML = '';
@@ -290,12 +295,7 @@ function renderComics(filter = '') {
     grid.appendChild(card);
   });
 }
-${c.event} ${(c.characters || []).join(' ')} ${(c.writer || []).join(' ')} ${(c.artist || []).join(' ')}`.toLowerCase();
-        return text.includes(filter.toLowerCase());
-      }).sort((a, b) => sort === 'asc'
-        ? (a.issue_number || 0) - (b.issue_number || 0)
-        : (b.issue_number || 0) - (a.issue_number || 0)
-      );
+
 
       filtered.forEach(c => {
         const card = document.createElement('div');
@@ -532,16 +532,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const sortSelect = document.getElementById('sortSelect');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', () => {
-      renderComics(document.getElementById('searchInput')?.value || '');
-    });
-  }
-});
-</script>
-</body>
+</script></body>
 </html>
