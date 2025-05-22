@@ -12,16 +12,18 @@
       font-family: 'Inter', sans-serif;
       color: #f0f0f0;
     }
+    .search-bar-wrapper {
+      position: sticky;
+      top: 4px;
+      z-index: 999;
+      background: #181818;
+    }
     .search-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 0.3rem;
       padding: 0.5rem;
-      background: #181818;
-      position: sticky;
-      top: 4px;
-      z-index: 999;
     }
     .search-bar input,
     .search-bar select,
@@ -32,6 +34,15 @@
       background: #292929;
       color: #f0f0f0;
       font-size: 0.8rem;
+    }
+    #settingsMenu {
+      display: none;
+      background: #181818;
+      border: 1px solid #333;
+      padding: 0.5rem;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      margin-top: 0.5rem;
     }
     .comic-grid {
       display: grid;
@@ -140,11 +151,13 @@
   <div id="progressBarWrap" style="height: 4px; background: #333; position: sticky; top: 0; z-index: 1000;">
     <div id="progressBar" style="height: 100%; width: 0%; background: #4caf50;"></div>
   </div>
-  <div class="search-bar">
-    <button id="settingsToggle">⚙️</button>
-    <input id="searchInput" type="text" placeholder="Search..." />
-    <div id="progressText" style="margin-left: auto; font-size: 0.75rem; color: #bbb;">0 / 0 read (0%)</div>
-    <div id="settingsMenu" style="display: none; position: absolute; background: #181818; border: 1px solid #333; padding: 0.5rem; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.4);">
+  <div class="search-bar-wrapper">
+    <div class="search-bar">
+      <button id="settingsToggle">⚙️</button>
+      <input id="searchInput" type="text" placeholder="Search..." />
+      <div id="progressText" style="margin-left: auto; font-size: 0.75rem; color: #bbb;">0 / 0 read (0%)</div>
+    </div>
+    <div id="settingsMenu">
       <label style="font-size: 0.75rem;">Columns</label>
       <select id="columnSelect">
         <option value="auto">Auto</option>
@@ -169,6 +182,6 @@
   <div id="comicGrid" class="comic-grid"></div>
   <dialog id="infoDialog"></dialog>
   <button id="scrollTopBtn">↑</button>
-  <script src="app.js"></script> <!-- Dein JavaScript kommt extern hier rein -->
+  <script src="app.js"></script>
 </body>
 </html>
