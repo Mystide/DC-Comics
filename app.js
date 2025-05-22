@@ -7,17 +7,24 @@ function getStorageKey(comic) {
 }
 
 function toggleReadByKey(key) {
-  if (localStorage.getItem(key)) {
+  const card = document.querySelector(`.comic-card[data-key="${key}"]`);
+  if (!card) return;
+
+  const isRead = card.classList.contains('read');
+
+  if (isRead) {
     localStorage.removeItem(key);
+    card.classList.remove('read');
+    card.style.outline = 'none';
   } else {
     localStorage.setItem(key, 'read');
+    card.classList.add('read');
+    card.style.outline = '2px solid #3a9440';
+    card.style.outlineOffset = '-2px';
   }
 
   updateProgress();
-
-  const card = document.querySelector(`.comic-card[data-key="${key}"]`);
-  if (card) {
-    card.classList.toggle('read');
+}
     if (card.classList.contains('read')) {
       card.style.outline = '2px solid #3a9440';
       card.style.outlineOffset = '-2px';
