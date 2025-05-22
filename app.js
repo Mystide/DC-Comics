@@ -111,6 +111,7 @@ function renderComics(filter = '') {
     img.addEventListener('mouseup', cancelPress);
     img.addEventListener('mouseleave', cancelPress);
     img.addEventListener('touchend', cancelPress);
+    img.addEventListener('contextmenu', e => e.preventDefault());
 
     img.addEventListener('click', e => {
       if (longPress) return;
