@@ -16,12 +16,15 @@ function toggleReadByKey(key) {
   updateProgress();
 
   const card = document.querySelector(`.comic-card[data-key="${key}"]`);
-  if (card) card.classList.toggle('read');
+  if (card) {
+    card.classList.toggle('read');
     if (card.classList.contains('read')) {
-      if (localStorage.getItem(key)) {
       card.style.outline = '2px solid #3a9440';
       card.style.outlineOffset = '-2px';
     } else {
+      card.style.outline = 'none';
+    }
+  } else {
       card.style.outline = 'none';
     }
     } else {
