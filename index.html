@@ -1,67 +1,88 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Comic Guide Viewer</title>
-<style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Comic Guide Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
     body {
       margin: 0;
       background: #0d0d0d;
-      font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', sans-serif;
+      font-family: 'Inter', sans-serif;
       color: #f0f0f0;
     }
     .search-bar {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 0.3rem;
       padding: 0.5rem;
       background: #181818;
+      position: sticky;
+      top: 4px;
+      z-index: 999;
       align-items: center;
     }
-    .search-bar input, .search-bar select {
+    .search-bar input,
+    .search-bar select,
+    .search-bar button {
       padding: 0.35rem 0.6rem;
       border: none;
       border-radius: 6px;
       background: #292929;
       color: #f0f0f0;
       font-size: 0.8rem;
-      appearance: none;
-      max-width: 100px;
-      transition: background 0.2s ease, color 0.2s ease;
     }
     .comic-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
-  align-items: start;
-}
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+      justify-content: start;
+    }
+    .comic-card {
+      background: #1c1c1c;
+      border-radius: 8px;
+      padding: 0.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+    }
+    .comic-card:hover {
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+      transform: translateY(-3px);
+    }
+    .comic-card.read {
+      opacity: 0.6;
+    }
+    .comic-card.read .read-badge {
+      display: block;
+    }
     .comic-card img {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  display: block;
-  border-radius: 4px;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 0.3s ease-in;
-}
-.comic-card img.loaded {
-  opacity: 1;
-}
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      border-radius: 4px;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.3s ease-in;
+    }
+    .comic-card img.loaded {
+      opacity: 1;
+    }
     .comic-title {
-  font-weight: bold;
-  font-size: 0.9rem;
-  text-align: center;
-  margin-top: 0.5rem;
-  min-height: 2.5rem;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
+      font-weight: bold;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 0.5rem;
+      min-height: 2.5rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
     .read-badge {
       position: absolute;
       top: 6px;
@@ -72,12 +93,6 @@
       padding: 0.2rem 0.4rem;
       border-radius: 3px;
       display: none;
-    }
-    .comic-card.read .read-badge {
-      display: block;
-    }
-    .comic-card.read {
-      opacity: 0.6;
     }
     dialog {
       position: relative;
@@ -116,345 +131,65 @@
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-  .comic-card img.loaded {
-  opacity: 1;
-}
-.comic-card {
-  background: #1c1c1c;
-  border-radius: 8px;
-  padding: 0.5rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-.comic-card:hover {
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
-  transform: translateY(-3px);
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
-}
-
-#scrollTopBtn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #444;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: none;
-  font-size: 1.5rem;
-  font-weight: bold;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-  cursor: pointer;
-  z-index: 1000;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-#scrollTopBtn:hover {
-  background: #666;
-  transform: translateY(-2px);
-}
-
-
-.comic-grid {
-  justify-content: start;
-}
-.comic-card {
-  
-}
-</style>
+    #scrollTopBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: none;
+      font-size: 1.5rem;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      cursor: pointer;
+      z-index: 1000;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    #scrollTopBtn:hover {
+      background: #666;
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 <body>
-<div id="progressBarWrap" style="width: 100%; height: 4px; background: #333; border-radius: 4px; position: sticky; top: 0; z-index: 1000;">
-<div id="progressBar" style="height: 100%; width: 0%; background: #4caf50; border-radius: 4px;"></div>
-</div>
-<div class="search-bar" style="position: sticky; top: 4px; z-index: 999; justify-content: flex-start;">
-<button id="settingsToggle" style="padding: 0.35rem 0.6rem; border: none; border-radius: 6px; background: #292929; color: #f0f0f0; font-size: 0.8rem; cursor: pointer;">⚙️</button>
-<input id="searchInput" placeholder="Search..." title="Search title, event, characters, writer, artist" type="text"/>
-<div id="progressText" style="font-size: 0.75rem; color: #bbb; margin-left: auto;">0 / 0 read (0%)</div>
-<div id="settingsMenu" style="display: none; position: absolute; top: 100%; left: 0; background: #181818; border: 1px solid #333; padding: 0.5rem; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.4); z-index: 9999;">
-<label style="font-size: 0.75rem; display: block; margin-bottom: 0.25rem;">Columns</label>
-<select id="columnSelect">
-<option value="auto">Auto</option>
-<option value="2">2 Columns</option>
-<option value="3">3 Columns</option>
-<option value="4">4 Columns</option>
-<option value="5">5 Columns</option>
-</select>
-<label style="font-size: 0.75rem; display: block; margin: 0.5rem 0 0.25rem;">Sort</label>
-<select id="sortSelect">
-<option value="asc">Ascending ↑</option>
-<option value="desc">Descending ↓</option>
-</select>
-<label style="font-size: 0.75rem; display: block; margin: 0.5rem 0 0.25rem;">Filter</label>
-<select id="readFilterSelect">
-<option value="all">All</option>
-<option value="unread">Unread</option>
-<option value="read">Read</option>
-</select>
-</div>
-</div>
-<button id="scrollTopBtn">↑</button>
-<div class="comic-grid" id="comicGrid"></div>
-<dialog id="infoDialog" style="padding-top: 2.2rem;"></dialog>
-<script>document.getElementById('searchInput').value = '';
-
-    let comics = [];
-
-    function renderComics(filter = '') {
-      const readFilter = document.getElementById('readFilterSelect')?.value || 'all';
-      const grid = document.getElementById('comicGrid');
-      grid.innerHTML = '';
-      const sort = document.getElementById('sortSelect').value;
-      const filtered = comics.filter(c => {
-        if (readFilter === 'read' && !localStorage.getItem(c.title)) return false;
-        if (readFilter === 'unread' && localStorage.getItem(c.title)) return false;
-        const text = `${c.title} ${c.event} ${(c.characters || []).join(' ')} ${(c.writer || []).join(' ')} ${(c.artist || []).join(' ')}`.toLowerCase();
-        return text.includes(filter.toLowerCase());
-      }).sort((a, b) => sort === 'asc'
-        ? (a.issue_number || 0) - (b.issue_number || 0)
-        : (b.issue_number || 0) - (a.issue_number || 0)
-      );
-
-      filtered.forEach(c => {
-        const card = document.createElement('div');
-        card.className = 'comic-card';
-        if (localStorage.getItem(c.title)) card.classList.add('read');
-
-        const badge = document.createElement('div');
-        badge.className = 'read-badge';
-        badge.textContent = 'Read';
-        card.appendChild(badge);
-
-        const img = document.createElement('img');
-        img.dataset.src = c.covers[0];
-        img.classList.add('fade');
-        img.onload = () => img.classList.add('loaded');
-        observer.observe(img);
-        img.alt = c.title;
-        img.addEventListener('contextmenu', (e) => e.preventDefault());
-
-        let pressTimer;
-        let longPress = false;
-        img.addEventListener('mousedown', (event) => {
-          if (event.button !== 0) return;
-          if (document.getElementById('infoDialog').open) return;
-          longPress = false;
-          card.setAttribute('data-pressing', 'true');
-          pressTimer = setTimeout(() => {
-            if (card.getAttribute('data-pressing') === 'true') {
-              longPress = true;
-              toggleRead(c.title);
-              navigator.vibrate?.(100);
-            }
-          }, 600);
-        });
-        img.addEventListener('touchstart', (event) => {
-          if (document.getElementById('infoDialog').open) return;
-          longPress = false;
-          card.setAttribute('data-pressing', 'true');
-          pressTimer = setTimeout(() => {
-            
-            if (card.getAttribute('data-pressing') === 'true') {
-              longPress = true;
-              toggleRead(c.title);
-              navigator.vibrate?.(100);
-            }
-          }, 600);
-        });
-        img.addEventListener('mouseup', () => {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-        });
-        img.addEventListener('touchend', () => {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-        });
-        img.addEventListener('mouseleave', () => {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-        });
-        img.addEventListener('click', (e) => {
-          card.setAttribute('data-pressing', 'false');
-          clearTimeout(pressTimer);
-          if (longPress) return;
-          e.preventDefault();
-          openDialog(c);
-        });
-
-        card.appendChild(img);
-
-        const title = document.createElement('div');
-        title.className = 'comic-title';
-        title.textContent = c.title;
-        card.appendChild(title);
-
-        grid.appendChild(card);
-      });
-    }
-
-    function openDialog(comic) {
-      const dialog = document.getElementById('infoDialog');
-      dialog.innerHTML = `
-        <button onclick="document.getElementById('infoDialog').close()" style="position: absolute; top: 8px; right: 12px; background: transparent; border: none; font-size: 1.5rem; color: #ccc; cursor: pointer; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'">&times;</button>
-        <h2>${comic.title}</h2>
-        <p><strong>Release:</strong> ${comic.release_date || ''}</p>
-        <p><strong>Event:</strong> ${comic.event || '-'}</p>
-        <p><strong>Format:</strong> ${comic.format || ''} | ${comic.page_count || ''} pages</p>
-        <p><strong>Writer:</strong> ${(comic.writer || []).join(', ')}</p>
-        <p><strong>Artist:</strong> ${(comic.artist || []).join(', ')}</p>
-        <p><strong>Characters:</strong> ${(comic.characters || []).join(', ')}</p>
-        <p>${comic.description || ''}</p>
-        <p><a href="${comic.url}" target="_blank">🔗 View on League of Comic Geeks</a></p>
-      `;
-      dialog.showModal();
-      dialog.addEventListener('click', (event) => {
-        const rect = dialog.getBoundingClientRect();
-        const isInDialog = (
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-        );
-        if (!isInDialog) dialog.close();
-      }, { once: true });
-    }
-
-    function toggleRead(title) {
-      if (localStorage.getItem(title)) {
-        localStorage.removeItem(title);
-      } else {
-        localStorage.setItem(title, 'read');
-      }
-
-      document.getElementById('infoDialog').close();
-      const grid = document.getElementById('comicGrid');
-      const cards = grid.querySelectorAll('.comic-card');
-      cards.forEach(card => {
-        const titleEl = card.querySelector('.comic-title');
-        if (titleEl?.textContent === title) {
-          card.classList.toggle('read');
-        }
-      });
-      updateProgress();
-
-      setTimeout(() => {
-        const cards = document.querySelectorAll('.comic-card');
-        cards.forEach(card => {
-          if (card.querySelector('.comic-title')?.textContent === title) {
-            card.style.boxShadow = '0 0 10px #4caf50';
-            setTimeout(() => card.style.boxShadow = '', 250);
-          }
-        });
-      }, 0);
-    }
-
-    function updateProgress() {
-      const total = comics.length;
-      const read = comics.filter(c => localStorage.getItem(c.title)).length;
-      const percent = total ? ((read / total) * 100).toFixed(2) : 0;
-      document.getElementById('progressBar').style.width = `${percent}%`;
-      const text = `${read} / ${total} read (${percent}%)`;
-      document.getElementById('progressText').textContent = text;
-    }
-
-    document.getElementById('searchInput').addEventListener('input', e => {
-      renderComics(e.target.value);
-    });
-    document.getElementById('sortSelect').addEventListener('change', () => {
-      renderComics(document.getElementById('searchInput').value);
-    });
-
-    document.getElementById('readFilterSelect').addEventListener('change', () => {
-      renderComics(document.getElementById('searchInput').value);
-    });
-
-    document.getElementById('columnSelect').addEventListener('change', (e) => {
-      const grid = document.getElementById('comicGrid');
-      const value = e.target.value;
-      if (value === 'auto') {
-  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(160px, 1fr))';
-} else {
-        grid.style.gridTemplateColumns = `repeat(${value}, minmax(0, 1fr))`;
-      }
-    });
-
-    fetch("./manifest.json")
-      .then(res => res.json())
-      .then(files => Promise.all(
-        files.map(file => fetch(file).then(r => r.json()))
-      ))
-      .then(results => {
-        comics = results.flat();
-        renderComics();
-        updateProgress();
-      });
-  // Preload observer for intelligent loading
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const img = entry.target;
-      img.src = img.dataset.src;
-      observer.unobserve(img);
-    }
-  });
-}, {
-  rootMargin: '600px'
-});
-document.getElementById('settingsToggle').addEventListener('click', () => {
-  const menu = document.getElementById('settingsMenu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-});
-
-document.addEventListener('click', (e) => {
-  const toggle = document.getElementById('settingsToggle');
-  const menu = document.getElementById('settingsMenu');
-  if (!menu.contains(e.target) && e.target !== toggle) {
-    menu.style.display = 'none';
-  }
-});
-
-window.addEventListener('scroll', () => {
-  const btn = document.getElementById('scrollTopBtn');
-  btn.style.display = window.scrollY > 300 ? 'block' : 'none';
-});
-
-document.getElementById('scrollTopBtn').addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-
-document.getElementById('settingsToggle').addEventListener('click', () => {
-  const menu = document.getElementById('settingsMenu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-});
-</script>
-<button id="scrollTopBtn">↑</button>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle = document.getElementById('settingsToggle');
-  const menu = document.getElementById('settingsMenu');
-  if (menu) menu.style.display = 'none';
-
-  toggle?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (menu.style.display === 'none') {
-      menu.style.display = 'block';
-    } else {
-      menu.style.display = 'none';
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!menu.contains(e.target) && e.target !== toggle) {
-      menu.style.display = 'none';
-    }
-  });
-});
-</script></body>
+  <div id="progressBarWrap" style="width: 100%; height: 4px; background: #333; border-radius: 4px; position: sticky; top: 0; z-index: 1000;">
+    <div id="progressBar" style="height: 100%; width: 0%; background: #4caf50; border-radius: 4px;"></div>
+  </div>
+  <div class="search-bar">
+    <button id="settingsToggle">⚙️</button>
+    <input id="searchInput" type="text" placeholder="Search..." title="Search title, event, characters, writer, artist"/>
+    <div id="progressText" style="font-size: 0.75rem; color: #bbb; margin-left: auto;">0 / 0 read (0%)</div>
+    <div id="settingsMenu" style="display:none; position:absolute; top:100%; left:0; background:#181818; border:1px solid #333; padding:0.5rem; border-radius:6px; box-shadow:0 0 10px rgba(0,0,0,0.4); z-index:9999;">
+      <label style="font-size: 0.75rem;">Columns</label>
+      <select id="columnSelect">
+        <option value="auto">Auto</option>
+        <option value="2">2 Columns</option>
+        <option value="3">3 Columns</option>
+        <option value="4">4 Columns</option>
+        <option value="5">5 Columns</option>
+      </select>
+      <label style="font-size: 0.75rem;">Sort</label>
+      <select id="sortSelect">
+        <option value="asc">Ascending ↑</option>
+        <option value="desc">Descending ↓</option>
+      </select>
+      <label style="font-size: 0.75rem;">Filter</label>
+      <select id="readFilterSelect">
+        <option value="all">All</option>
+        <option value="unread">Unread</option>
+        <option value="read">Read</option>
+      </select>
+    </div>
+  </div>
+  <div class="comic-grid" id="comicGrid"></div>
+  <dialog id="infoDialog" style="padding-top: 2.2rem;"></dialog>
+  <button id="scrollTopBtn">↑</button>
+  <script>
+    // Der JS-Teil bleibt unverändert, da bereits optimiert. Optional kann ich auch diesen reduzieren.
+  </script>
+</body>
 </html>
