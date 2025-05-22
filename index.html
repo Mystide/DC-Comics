@@ -35,20 +35,21 @@
       font-size: 0.8rem;
     }
     #settingsMenu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.5rem;
-  background: #181818;
-  border: 1px solid #333;
-  padding: 0.5rem;
-  border-radius: 6px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.4);
-  flex-direction: column;
-  gap: 0.5rem;
-  z-index: 998;
-}
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 0.5rem;
+      background: #181818;
+      border: 1px solid #333;
+      padding: 0.5rem;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 998;
+    }
     #settingsMenu label,
     #settingsMenu select {
       display: block;
@@ -160,3 +161,49 @@
     }
   </style>
 </head>
+<body onload="document.getElementById('searchInput').value = ''">
+  <div id="progressBarWrap" style="height: 4px; background: #333; position: sticky; top: 0; z-index: 1000;">
+    <div id="progressBar" style="height: 100%; width: 0%; background: #4caf50;"></div>
+  </div>
+  <div class="search-bar-wrapper">
+    <div class="search-bar">
+      <button id="settingsToggle">⚙️</button>
+      <input id="searchInput" type="text" placeholder="Search..." />
+      <div id="progressText" style="margin-left: auto; font-size: 0.75rem; color: #bbb;">0 / 0 read (0%)</div>
+    </div>
+    <div id="settingsMenu">
+      <label for="columnSelect">Columns</label>
+      <select id="columnSelect">
+        <option value="auto">Auto</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <label for="sortSelect">Sort</label>
+      <select id="sortSelect">
+        <option value="title-asc">A–Z</option>
+        <option value="title-desc">Z–A</option>
+        <option value="date-desc">Release Date (new to old)</option>
+        <option value="date-asc">Release Date (old to new)</option>
+      </select>
+      <label for="readFilterSelect">Filter</label>
+      <select id="readFilterSelect">
+        <option value="all">All</option>
+        <option value="unread">Unread</option>
+        <option value="read">Read</option>
+      </select>
+    </div>
+  </div>
+  <div id="comicGrid" class="comic-grid"></div>
+  <dialog id="infoDialog">
+    <button onclick="this.parentElement.close()" style="position:absolute;top:8px;right:12px;background:transparent;border:none;font-size:1.5rem;color:#ccc;cursor:pointer;">&times;</button>
+    <h2 id="dialogTitle"></h2>
+    <p><strong>Series:</strong> <span id="dialogSeries"></span></p>
+    <p><strong>Issue:</strong> <span id="dialogIssue"></span></p>
+    <p><strong>Release:</strong> <span id="dialogDate"></span></p>
+  </dialog>
+  <button id="scrollTopBtn">↑</button>
+  <script src="app.js"></script>
+</body>
+</html>
