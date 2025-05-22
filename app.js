@@ -10,9 +10,7 @@ function toggleReadByKey(key) {
   const card = document.querySelector(`.comic-card[data-key="${key}"]`);
   if (!card) return;
 
-  const isRead = card.classList.contains('read');
-
-  if (isRead) {
+  if (card.classList.contains('read')) {
     localStorage.removeItem(key);
     card.classList.remove('read');
   } else {
