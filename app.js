@@ -114,9 +114,6 @@ function renderComics(filter = '') {
         startPress();
       }
     });
-    cover.addEventListener('touchmove', () => {
-      clearTimeout(pressTimer); // entscheidend bei Scroll
-    });
     cover.addEventListener('mouseup', cancelPress);
     cover.addEventListener('mouseleave', cancelPress);
     cover.addEventListener('touchend', e => {
