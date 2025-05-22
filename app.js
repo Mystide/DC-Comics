@@ -13,9 +13,12 @@ function toggleReadByKey(key) {
   if (card.classList.contains('read')) {
     localStorage.removeItem(key);
     card.classList.remove('read');
+    card.style.outline = 'none';
   } else {
     localStorage.setItem(key, 'read');
     card.classList.add('read');
+    card.style.outline = '1px solid #2e7d32';
+    card.style.outlineOffset = '-1px';
   }
 
   updateProgress();
