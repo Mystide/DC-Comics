@@ -17,6 +17,12 @@ function toggleReadByKey(key) {
 
   const card = document.querySelector(`.comic-card[data-key="${key}"]`);
   if (card) card.classList.toggle('read');
+    if (card.classList.contains('read')) {
+      card.style.outline = '2px solid #3a9440';
+      card.style.outlineOffset = '-2px';
+    } else {
+      card.style.outline = 'none';
+    }
 }
 
 function updateProgress() {
@@ -69,6 +75,8 @@ function renderComics(filter = '') {
     card.className = 'comic-card';
     card.dataset.key = key;
     if (localStorage.getItem(key)) card.classList.add('read');
+    card.style.outline = '2px solid #3a9440';
+    card.style.outlineOffset = '-2px';
 
     const badge = document.createElement('div');
     badge.className = 'read-badge';
