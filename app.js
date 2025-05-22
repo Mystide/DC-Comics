@@ -7,35 +7,16 @@ function getStorageKey(comic) {
 }
 
 function toggleReadByKey(key) {
-  const card = document.querySelector(`.comic-card[data-key="${key}"]`);
-  if (!card) return;
-
-  if (card.classList.contains('read')) {
+  if (localStorage.getItem(key)) {
     localStorage.removeItem(key);
-    card.classList.remove('read');
-    card.style.outline = 'none';
   } else {
     localStorage.setItem(key, 'read');
-    card.classList.add('read');
-    card.style.transition = 'outline 0.3s ease';
-    card.style.outline = '1px solid #2e7d32';
-    card.style.outlineOffset = '-1px';
   }
 
   updateProgress();
-}
-    if (card.classList.contains('read')) {
-      card.style.outline = '2px solid #3a9440';
-      card.style.outlineOffset = '-2px';
-    } else {
-      card.style.outline = 'none';
-    }
-  } else {
-      card.style.outline = 'none';
-    }
-    } else {
-      card.style.outline = 'none';
-    }
+
+  const card = document.querySelector(`.comic-card[data-key="${key}"]`);
+  if (card) card.classList.toggle('read');
 }
 
 function updateProgress() {
@@ -87,11 +68,7 @@ function renderComics(filter = '') {
     const key = getStorageKey(c);
     card.className = 'comic-card';
     card.dataset.key = key;
-    if (localStorage.getItem(key)) {
-    card.classList.add('read');
-  } else {
-    card.classList.remove('read');
-  }
+    if (localStorage.getItem(key)) card.classList.add('read');
 
     const badge = document.createElement('div');
     badge.className = 'read-badge';
@@ -110,8 +87,6 @@ function renderComics(filter = '') {
 
     let pressTimer;
     let longPress = false;
-    let startX = 0;
-    let startY = 0;
 
     const startPress = () => {
       longPress = false;
@@ -124,24 +99,10 @@ function renderComics(filter = '') {
     const cancelPress = () => clearTimeout(pressTimer);
 
     cover.addEventListener('mousedown', e => { if (e.button === 0) startPress(); });
-    cover.addEventListener('touchstart', e => {
-      if (e.touches.length === 1) {
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        startPress();
-      }
-    });
+    cover.addEventListener('touchstart', startPress);
     cover.addEventListener('mouseup', cancelPress);
     cover.addEventListener('mouseleave', cancelPress);
-    cover.addEventListener('touchend', e => {
-      const dx = Math.abs(e.changedTouches[0].clientX - startX);
-      const dy = Math.abs(e.changedTouches[0].clientY - startY);
-      if (dx < 10 && dy < 10) {
-        cancelPress();
-      } else {
-        clearTimeout(pressTimer);
-      }
-    });
+    cover.addEventListener('touchend', cancelPress);
     cover.addEventListener('contextmenu', e => e.preventDefault());
 
     cover.addEventListener('click', e => {
