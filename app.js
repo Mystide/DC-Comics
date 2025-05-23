@@ -1,4 +1,4 @@
-// app.js – mit numerisch verbessertem Titel-Sortierverhalten
+// app.js – vollständig bereinigt, Touch-scroll-sicher, ohne defekten Code
 
 let comicData = [];
 
@@ -7,16 +7,18 @@ function getStorageKey(comic) {
 }
 
 function toggleReadByKey(key) {
-  if (localStorage.getItem(key)) {
+  const card = document.querySelector(`.comic-card[data-key="${key}"]`);
+  if (!card) return;
+
+  if (card.classList.contains('read')) {
     localStorage.removeItem(key);
+    card.classList.remove('read');
   } else {
     localStorage.setItem(key, 'read');
+    card.classList.add('read');
   }
 
   updateProgress();
-
-  const card = document.querySelector(`.comic-card[data-key="${key}"]`);
-  if (card) card.classList.toggle('read');
 }
 
 function updateProgress() {
@@ -87,21 +89,44 @@ function renderComics(filter = '') {
 
     let pressTimer;
     let longPress = false;
+    let touchMoved = false;
+    let startX = 0;
+    let startY = 0;
 
     const startPress = () => {
       longPress = false;
       pressTimer = setTimeout(() => {
-        longPress = true;
-        toggleReadByKey(key);
+        if (!touchMoved) {
+          longPress = true;
+          toggleReadByKey(key);
+        }
       }, 600);
     };
 
     const cancelPress = () => clearTimeout(pressTimer);
 
     cover.addEventListener('mousedown', e => { if (e.button === 0) startPress(); });
-    cover.addEventListener('touchstart', startPress);
     cover.addEventListener('mouseup', cancelPress);
     cover.addEventListener('mouseleave', cancelPress);
+
+    cover.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        touchMoved = false;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        startPress();
+      }
+    });
+
+    cover.addEventListener('touchmove', e => {
+      const dx = Math.abs(e.touches[0].clientX - startX);
+      const dy = Math.abs(e.touches[0].clientY - startY);
+      if (dx > 5 || dy > 5) {
+        touchMoved = true;
+        clearTimeout(pressTimer);
+      }
+    });
+
     cover.addEventListener('touchend', cancelPress);
     cover.addEventListener('contextmenu', e => e.preventDefault());
 
