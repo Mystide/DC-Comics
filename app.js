@@ -134,16 +134,12 @@ function renderComics(filter = '') {
       openDialog(c);
     });
 
-const title = document.createElement('div');
-title.className = 'comic-title';
-title.textContent = c.title;
+    const title = document.createElement('div');
+    title.className = 'comic-title';
+    title.textContent = c.title;
 
-const date = document.createElement('div');
-date.className = 'comic-date';
-date.textContent = c.release_date || '';
-
-card.append(cover, title, date);
-
+    card.append(cover, title);
+    grid.appendChild(card);
   });
 
   updateProgress();
