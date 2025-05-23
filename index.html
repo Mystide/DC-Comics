@@ -99,11 +99,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: box-shadow 0.3s ease, transform 0.2s ease;
+      transition: outline 0.3s ease, transform 0.2s ease;
     }
     .comic-card.read {
-      opacity: 0.6;
-      border: 2px solid #4caf50;
+  outline: 1px solid #2e7d32;
+  outline-offset: -1px;
+  transition: outline 0.3s ease;
     }
     .comic-card.read .read-badge {
       display: block;
