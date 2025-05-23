@@ -1,5 +1,3 @@
-// app.js – vollständig bereinigt, Touch-scroll-sicher, ohne defekten Code
-
 let comicData = [];
 
 function getStorageKey(comic) {
