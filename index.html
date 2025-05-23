@@ -105,9 +105,13 @@
       box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.7);
       opacity: 0.6;
     }
-    .comic-card.read .read-badge {
+    .read-badge {
+      transition: opacity 0.3s ease;
+      opacity: 0;
+    }
+  .comic-card.read .read-badge {
       display: block;
-      font-weight: bold;
+      opacity: 1;
     }
     .comic-title {
       font-weight: bold;
