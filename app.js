@@ -1,3 +1,5 @@
+// app.js – mit Veröffentlichungsdatum in der Übersicht
+
 let comicData = [];
 
 function getStorageKey(comic) {
@@ -85,60 +87,15 @@ function renderComics(filter = '') {
     cover.style.backgroundPosition = 'center';
     cover.style.transition = 'opacity 0.3s ease-in';
 
-    let pressTimer;
-    let longPress = false;
-    let touchMoved = false;
-    let startX = 0;
-    let startY = 0;
-
-    const startPress = () => {
-      longPress = false;
-      pressTimer = setTimeout(() => {
-        if (!touchMoved) {
-          longPress = true;
-          toggleReadByKey(key);
-        }
-      }, 600);
-    };
-
-    const cancelPress = () => clearTimeout(pressTimer);
-
-    cover.addEventListener('mousedown', e => { if (e.button === 0) startPress(); });
-    cover.addEventListener('mouseup', cancelPress);
-    cover.addEventListener('mouseleave', cancelPress);
-
-    cover.addEventListener('touchstart', e => {
-      if (e.touches.length === 1) {
-        touchMoved = false;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        startPress();
-      }
-    });
-
-    cover.addEventListener('touchmove', e => {
-      const dx = Math.abs(e.touches[0].clientX - startX);
-      const dy = Math.abs(e.touches[0].clientY - startY);
-      if (dx > 5 || dy > 5) {
-        touchMoved = true;
-        clearTimeout(pressTimer);
-      }
-    });
-
-    cover.addEventListener('touchend', cancelPress);
-    cover.addEventListener('contextmenu', e => e.preventDefault());
-
-    cover.addEventListener('click', e => {
-      if (longPress) return;
-      e.preventDefault();
-      openDialog(c);
-    });
-
     const title = document.createElement('div');
     title.className = 'comic-title';
     title.textContent = c.title;
 
-    card.append(cover, title);
+    const date = document.createElement('div');
+    date.className = 'comic-date';
+    date.textContent = c.release_date || '';
+
+    card.append(cover, title, date);
     grid.appendChild(card);
   });
 
